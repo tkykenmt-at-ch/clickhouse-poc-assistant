@@ -7,13 +7,13 @@ SELECT
     query_kind,
     countIf(event_time >= day_start) AS last_24h,
     round(countIf(event_time < day_start) / 7) AS daily_avg_prev_7d,
-    countIf(event_time >= day_start AND type = 'ExceptionWhileProcessing') AS errors_last_24h,
+    countIf(event_time >= day_start AND type != 'QueryFinish') AS errors_last_24h,
     round(quantileIf(0.99)(query_duration_ms, event_time >= day_start AND type = 'QueryFinish')) AS p99_ms_last_24h,
     round(quantileIf(0.99)(query_duration_ms, event_time < day_start AND type = 'QueryFinish')) AS p99_ms_prev_7d,
     sumIf(written_rows, event_time >= day_start) AS written_rows_last_24h,
     round(sumIf(written_rows, event_time < day_start) / 7) AS written_rows_daily_avg_prev_7d
 FROM clusterAllReplicas('default', merge('system', '^query_log'))
-WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing')
+WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing', 'ExceptionBeforeStart')
   AND is_initial_query
   AND NOT (user = currentUser()  -- this connection's own reads of system tables; other queries of the same user stay (failures before start have no tables and stay)
            AND notEmpty(tables) AND arrayAll(t -> startsWith(t, 'system.') OR startsWith(lower(t), 'information_schema.')

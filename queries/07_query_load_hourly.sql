@@ -17,13 +17,13 @@ FROM
         event_time AS second,
         query_kind,
         count() AS sec_queries,
-        countIf(type = 'ExceptionWhileProcessing') AS sec_errors,
+        countIf(type != 'QueryFinish') AS sec_errors,
         quantilesStateIf(0.5, 0.99)(query_duration_ms, type = 'QueryFinish') AS duration_state,
         sum(ProfileEvents['UserTimeMicroseconds'] + ProfileEvents['SystemTimeMicroseconds']) AS cpu_us,
         sum(read_rows) AS sec_read_rows,
         sum(written_rows) AS sec_written_rows
     FROM clusterAllReplicas('default', merge('system', '^query_log'))
-    WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing')
+    WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing', 'ExceptionBeforeStart')
       AND is_initial_query
       AND NOT (user = currentUser()  -- this connection's own reads of system tables; other queries of the same user stay (failures before start have no tables and stay)
                AND notEmpty(tables) AND arrayAll(t -> startsWith(t, 'system.') OR startsWith(lower(t), 'information_schema.')

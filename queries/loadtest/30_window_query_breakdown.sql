@@ -2,6 +2,8 @@
 -- and how much each query reads compared with what it returns. Ten busiest patterns per minute.
 -- Rows are also split by log_comment, so a load tool that tags each step (for example log_comment = 'step_c8') can be read per step.
 -- p50_ms and p99_ms count finished queries only; failed queries are in errors, so a run that fails fast does not look fast.
+-- errors includes queries rejected before they started (rejected_before_start), such as TOO_MANY_SIMULTANEOUS_QUERIES;
+-- those have no ProfileEvents, so the averages and shares count only queries that started.
 -- Replace the expression in front of each window marker with the test's start and end in UTC, for example
 -- toDateTime('2026-10-09 08:57:50', 'UTC') /*window_start*/. The end is exclusive.
 -- event_date is filtered a day either side of the window because it is in the server's time zone, not UTC.
@@ -13,32 +15,33 @@ SELECT
     query_kind,
     arrayStringConcat(any(tables), ' ') AS query_tables,
     count() AS executions,
-    countIf(type = 'ExceptionWhileProcessing') AS errors,
+    countIf(type != 'QueryFinish') AS errors,
+    countIf(type = 'ExceptionBeforeStart') AS rejected_before_start,
     arrayStringConcat(topKIf(3)(errorCodeToName(exception_code), exception_code != 0), ' ') AS top_errors,
     round(quantileIf(0.5)(query_duration_ms, type = 'QueryFinish')) AS p50_ms,
     round(quantileIf(0.99)(query_duration_ms, type = 'QueryFinish')) AS p99_ms,
-    round(avg(ProfileEvents['OSCPUVirtualTimeMicroseconds']) / 1e3, 1) AS avg_cpu_ms,
-    round(avg(ProfileEvents['OSCPUWaitMicroseconds']) / 1e3, 1) AS avg_cpu_wait_ms,
+    round(avgIf(ProfileEvents['OSCPUVirtualTimeMicroseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_cpu_ms,
+    round(avgIf(ProfileEvents['OSCPUWaitMicroseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_cpu_wait_ms,
     round(sum(ProfileEvents['OSCPUWaitMicroseconds']) / nullIf(sum(ProfileEvents['OSCPUVirtualTimeMicroseconds']), 0), 2) AS cpu_wait_ratio,
-    round(avg(ProfileEvents['OSIOWaitMicroseconds']) / 1e3, 1) AS avg_io_wait_ms,
+    round(avgIf(ProfileEvents['OSIOWaitMicroseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_io_wait_ms,
     round(sum(ProfileEvents['CachedReadBufferReadFromCacheBytes'])
           / nullIf(sum(ProfileEvents['CachedReadBufferReadFromCacheBytes']) + sum(ProfileEvents['CachedReadBufferReadFromSourceBytes']), 0), 3) AS fs_cache_hit_rate,
-    round(avg(ProfileEvents['ReadBufferFromS3Microseconds']) / 1e3, 1) AS avg_s3_read_ms,
-    round(avg(ProfileEvents['DelayedInsertsMilliseconds']), 1) AS avg_delayed_insert_ms,
+    round(avgIf(ProfileEvents['ReadBufferFromS3Microseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_s3_read_ms,
+    round(avgIf(ProfileEvents['DelayedInsertsMilliseconds'], type != 'ExceptionBeforeStart'), 1) AS avg_delayed_insert_ms,
     sum(ProfileEvents['DuplicatedInsertedBlocks'] + ProfileEvents['DuplicatedAsyncInserts']) AS duplicated_blocks,
-    round(countIf(query_cache_usage = 'Read') / count(), 3) AS query_cache_read_share,
-    round(countIf(ProfileEvents['QueryConditionCacheHits'] > 0) / count(), 3) AS condition_cache_hit_share,
-    round(avg(ProfileEvents['ConcurrencyControlWaitMicroseconds']) / 1e3, 1) AS avg_cpu_slot_wait_ms,
+    round(countIf(query_cache_usage = 'Read') / nullIf(countIf(type != 'ExceptionBeforeStart'), 0), 3) AS query_cache_read_share,
+    round(countIf(ProfileEvents['QueryConditionCacheHits'] > 0) / nullIf(countIf(type != 'ExceptionBeforeStart'), 0), 3) AS condition_cache_hit_share,
+    round(avgIf(ProfileEvents['ConcurrencyControlWaitMicroseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_cpu_slot_wait_ms,
     sum(ProfileEvents['RejectedInserts']) AS rejected_inserts,
-    round(avg(ProfileEvents['SelectedParts']), 1) AS avg_selected_parts,
-    round(avg(ProfileEvents['SelectedMarks']), 1) AS avg_selected_marks,
-    round(avg(ProfileEvents['SelectedMarks']) / nullIf(avg(ProfileEvents['SelectedMarksTotal']), 0), 3) AS marks_read_ratio,
-    round(avg(read_rows)) AS avg_read_rows,
-    round(avg(result_rows), 1) AS avg_result_rows,
-    round(avg(peak_threads_usage), 1) AS avg_peak_threads,
+    round(avgIf(ProfileEvents['SelectedParts'], type != 'ExceptionBeforeStart'), 1) AS avg_selected_parts,
+    round(avgIf(ProfileEvents['SelectedMarks'], type != 'ExceptionBeforeStart'), 1) AS avg_selected_marks,
+    round(avgIf(ProfileEvents['SelectedMarks'], type != 'ExceptionBeforeStart') / nullIf(avgIf(ProfileEvents['SelectedMarksTotal'], type != 'ExceptionBeforeStart'), 0), 3) AS marks_read_ratio,
+    round(avgIf(read_rows, type != 'ExceptionBeforeStart')) AS avg_read_rows,
+    round(avgIf(result_rows, type != 'ExceptionBeforeStart'), 1) AS avg_result_rows,
+    round(avgIf(peak_threads_usage, type != 'ExceptionBeforeStart'), 1) AS avg_peak_threads,
     max(memory_usage) AS max_memory_bytes
 FROM clusterAllReplicas('default', merge('system', '^query_log'))
-WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing')
+WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing', 'ExceptionBeforeStart')
   AND is_initial_query
   AND NOT (user = currentUser()  -- this connection's own reads of system tables; other queries of the same user stay (failures before start have no tables and stay)
            AND notEmpty(tables) AND arrayAll(t -> startsWith(t, 'system.') OR startsWith(lower(t), 'information_schema.')

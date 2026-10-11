@@ -3,7 +3,8 @@
 -- Compare only runs with the same load (users or rate) and the same cache conditions: query_cache_read_share shows
 -- results served from the query cache, fs_cache_hit_rate shows a cold or warm filesystem cache.
 -- Ratios are B / A; NULL when the pattern ran in only one of the runs.
--- Latency percentiles count finished queries only; failed queries are in errors_a and errors_b.
+-- Latency percentiles count finished queries only; failed queries, including those rejected before they started, are in errors_a and errors_b.
+-- Averages and shares count only queries that started.
 WITH
     now() - INTERVAL 2 HOUR /*a_start*/ AS a_start,
     now() - INTERVAL 1 HOUR /*a_end*/ AS a_end,
@@ -44,19 +45,19 @@ FROM
         toString(normalized_query_hash) AS query_hash,
         arrayStringConcat(any(tables), ' ') AS run_tables,
         count() AS executions,
-        countIf(type = 'ExceptionWhileProcessing') AS errors,
+        countIf(type != 'QueryFinish') AS errors,
         round(quantileIf(0.5)(query_duration_ms, type = 'QueryFinish')) AS p50_ms,
         round(quantileIf(0.99)(query_duration_ms, type = 'QueryFinish')) AS p99_ms,
-        round(avg(ProfileEvents['OSCPUVirtualTimeMicroseconds']) / 1e3, 1) AS avg_cpu_ms,
-        round(avg(read_rows)) AS avg_read_rows,
-        round(avg(ProfileEvents['SelectedMarks']), 1) AS avg_selected_marks,
-        round(countIf(query_cache_usage = 'Read') / count(), 3) AS query_cache_read_share,
-        round(countIf(ProfileEvents['QueryConditionCacheHits'] > 0) / count(), 3) AS condition_cache_hit_share,
-        round(avg(peak_threads_usage), 1) AS avg_peak_threads,
+        round(avgIf(ProfileEvents['OSCPUVirtualTimeMicroseconds'], type != 'ExceptionBeforeStart') / 1e3, 1) AS avg_cpu_ms,
+        round(avgIf(read_rows, type != 'ExceptionBeforeStart')) AS avg_read_rows,
+        round(avgIf(ProfileEvents['SelectedMarks'], type != 'ExceptionBeforeStart'), 1) AS avg_selected_marks,
+        round(countIf(query_cache_usage = 'Read') / nullIf(countIf(type != 'ExceptionBeforeStart'), 0), 3) AS query_cache_read_share,
+        round(countIf(ProfileEvents['QueryConditionCacheHits'] > 0) / nullIf(countIf(type != 'ExceptionBeforeStart'), 0), 3) AS condition_cache_hit_share,
+        round(avgIf(peak_threads_usage, type != 'ExceptionBeforeStart'), 1) AS avg_peak_threads,
         round(sum(ProfileEvents['CachedReadBufferReadFromCacheBytes'])
               / nullIf(sum(ProfileEvents['CachedReadBufferReadFromCacheBytes']) + sum(ProfileEvents['CachedReadBufferReadFromSourceBytes']), 0), 3) AS fs_cache_hit_rate
     FROM clusterAllReplicas('default', merge('system', '^query_log'))
-    WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing')
+    WHERE type IN ('QueryFinish', 'ExceptionWhileProcessing', 'ExceptionBeforeStart')
       AND is_initial_query
       AND NOT (user = currentUser()  -- this connection's own reads of system tables; other queries of the same user stay (failures before start have no tables and stay)
                AND notEmpty(tables) AND arrayAll(t -> startsWith(t, 'system.') OR startsWith(lower(t), 'information_schema.')

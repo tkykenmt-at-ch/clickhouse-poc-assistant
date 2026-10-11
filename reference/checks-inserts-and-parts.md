@@ -5,13 +5,13 @@ Each check names the columns it reads, the rule, and the public source of the ru
 ## Were inserts slowed or rejected on purpose?
 
 - **Columns**: `avg_delayed_insert_ms`, `rejected_inserts` (`queries/loadtest/30_window_query_breakdown.sql`), `avg_delayed_insert_ms` (`queries/advisor/12_insert_shape.sql`), `TOO_MANY_PARTS` in `queries/progress/26_errors_by_code.sql` (a rejected insert fails with this code), `max_parts_in_partition` (`queries/loadtest/31_window_cpu_10s.sql`, `queries/advisor/10_table_layout.sql`).
-- **Rule**: a delay or rejection above 0 means the server slowed or refused inserts because a partition had too many active parts. Compare the part counts with the service's own `parts_to_delay_insert` and `parts_to_throw_insert`, read with `SELECT name, value FROM system.merge_tree_settings WHERE name IN ('parts_to_delay_insert', 'parts_to_throw_insert')`; do not quote a default value.
-- **Source**: https://clickhouse.com/docs/reference/system-tables/events , https://clickhouse.com/docs/reference/settings/merge-tree-settings/parts-to
+- **Rule**: a delay or rejection above 0 means the server slowed or refused inserts because of too many active parts: in one partition (`parts_to_delay_insert`, `parts_to_throw_insert`) or in the whole table (`max_parts_in_total`, 10,000 on ClickHouse Cloud). Compare `max_parts_in_partition` with the first two and the table's `active_parts` (`10`) with the third, read from `SELECT name, value FROM system.merge_tree_settings WHERE name IN ('parts_to_delay_insert', 'parts_to_throw_insert', 'max_parts_in_total')`; do not quote a default value. These are server-level values: a table can override them in its own `SETTINGS`, so also look for these names in `engine_full` of the table in `system.tables`.
+- **Source**: https://clickhouse.com/docs/reference/system-tables/events , https://clickhouse.com/docs/reference/settings/merge-tree-settings/parts-to , https://clickhouse.com/docs/resources/support-center/knowledge-base/troubleshooting/exception-too-many-parts , https://clickhouse.com/docs/products/cloud/guides/best-practices/usagelimits
 
 ## Are async inserts sent without waiting?
 
 - **Columns**: `async_inserts`, `async_inserts_without_wait` (`12`), `async_inserts_without_wait_24h` (`queries/progress/25_insert_shape_change.sql`).
-- **Rule**: with `wait_for_async_insert = 0` the client is not told when a flush fails. The `Settings` map in `query_log` holds only changed settings, so a missing key means the default.
+- **Rule**: with `wait_for_async_insert = 0` the client is not told when a flush fails. The `Settings` map in `query_log` holds settings that differ from the built-in default, and on ClickHouse Cloud that includes values the service sets by default; a missing key means the built-in default. Before saying that the client chose a value, compare it with `getSetting('<name>')` on this connection: if they are the same, the value may come from the service, not from the client.
 - **Source**: https://clickhouse.com/docs/concepts/features/operations/insert/asyncinserts#choosing-a-return-mode
 
 ## Is async insert latency the flush wait?

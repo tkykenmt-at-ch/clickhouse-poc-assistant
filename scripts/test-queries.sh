@@ -119,6 +119,13 @@ if printf '%s\n' "$same_user_errors" | awk -F'\t' '$1 == "UNKNOWN_TABLE" {found=
 else
   echo "FAIL 26 run as the workload's user lost UNKNOWN_TABLE"; failed=$((failed + 1))
 fi
+# 30 must count failures before start in errors and rejected_before_start (TOO_MANY_SIMULTANEOUS_QUERIES is one).
+window_rows="$("$CH" client --port "$TCP" -q "$(cat "$ROOT/queries/loadtest/30_window_query_breakdown.sql")" --format TSVWithNames)"
+if printf '%s\n' "$window_rows" | awk -F'\t' 'NR == 1 {for (i = 1; i <= NF; i++) {if ($i == "rejected_before_start") r = i; if ($i == "top_errors") t = i; if ($i == "errors") e = i}; next} r && $r > 0 && $e >= $r && $t ~ /UNKNOWN_TABLE/ {found=1} END {exit !found}'; then
+  echo "ok   30 counts failures before start"
+else
+  echo "FAIL 30 lost the failure before start"; failed=$((failed + 1))
+fi
 
 # 12 must count app.copy as a target and not app.src, the table INSERT ... SELECT read.
 targets="$("$CH" client --port "$TCP" --user sizing_reader --password "$PASS" -q "$(cat "$ROOT/queries/advisor/12_insert_shape.sql")" --format TSV | cut -f1)"

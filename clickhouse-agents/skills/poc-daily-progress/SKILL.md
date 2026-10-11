@@ -50,7 +50,7 @@ If the file or either required section is missing, say which section is missing,
    - `queries/progress/23_changed_query_patterns.sql`
    - `queries/progress/24_table_changes.sql`
    - `queries/progress/25_insert_shape_change.sql`
-   - `queries/progress/26_errors_by_code.sql`, `queries/progress/27_background_health.sql` and `queries/progress/28_async_insert_failures.sql`, each with `30 /*days*/` replaced by `1`
+   - `queries/progress/26_errors_by_code.sql`, `queries/progress/27_background_health.sql` and `queries/progress/28_async_insert_failures.sql`, each with `30 /*days*/` replaced by `1` and the line `AND event_time >= now() - INTERVAL 1 DAY` added right after that condition (`event_date >= today() - 1` alone covers yesterday and today, up to 48 hours)
 
    Judge read and cache changes with `reference/checks-reads-and-queries.md` (for example a p99 that fell because results came from the query cache).
 

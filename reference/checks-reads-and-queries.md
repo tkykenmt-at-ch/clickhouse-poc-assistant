@@ -75,7 +75,7 @@ Each check names the columns it reads, the rule, and the public source of the ru
 ## Do queries rely on the old analyzer?
 
 - **Columns**: `old_analyzer_executions` (`11`).
-- **Rule**: ClickHouse Cloud is moving every service to the new analyzer, and since 26.9 it is mandatory (setting `enable_analyzer = 0` is rejected); patterns that turn it off need to be fixed before the service moves to 26.9.
+- **Rule**: ClickHouse Cloud is moving every service to the new analyzer, and since 26.9 it is mandatory (setting `enable_analyzer = 0` is rejected); patterns that turn it off need to be fixed before the service moves to 26.9. The count reads the `Settings` map, which on ClickHouse Cloud also holds values the service sets by default: if `getSetting('enable_analyzer')` on this connection is also 0, the service turns it off, not the queries; say so instead of asking to fix the patterns.
 - **Source**: https://clickhouse.com/docs/guides/clickhouse/performance-and-monitoring/analyzer#cloud-migration
 
 ## Does ORDER BY ... LIMIT read the whole table?

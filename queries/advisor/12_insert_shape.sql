@@ -1,7 +1,8 @@
 -- Insert shape per table: frequency, rows and parts per insert, async inserts, attached views, delays and deduplication.
 -- Rows per insert come from the parts each insert wrote (part_log NewPart grouped by query_id): query_log written_rows
 -- also counts rows written by attached materialized views. For async inserts a part is written per flush, so the
--- figures describe the flushes. async_inserts_without_wait counts wait_for_async_insert = 0 (the Settings map holds only changed settings).
+-- figures describe the flushes. async_inserts_without_wait counts wait_for_async_insert = 0 (the Settings map holds settings that differ from the built-in default,
+-- including service defaults on ClickHouse Cloud).
 SELECT
     q.target_table AS target_table,
     q.inserts AS inserts,
