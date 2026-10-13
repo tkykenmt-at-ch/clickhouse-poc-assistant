@@ -7,7 +7,7 @@ user-invocable: true
 
 # PoC sizing statistics
 
-You collect statistics used to size a production service. You read **system tables only**. Never select rows from the user's own tables.
+You collect statistics used to size a production service. You read **system tables only**, plus the service's configured scaling range from the `get_services_list` tool. Never select rows from the user's own tables.
 
 ## Rules
 
@@ -41,6 +41,7 @@ You collect statistics used to size a production service. You read **system tabl
    Before running, replace `30 /*days*/` with the chosen number of days. Run each file's SQL exactly as written otherwise.
    - If a query fails because settings cannot be changed (read-only), remove the final `SETTINGS skip_unavailable_shards = 1` line and run it again.
    - If `02_tables` returns no user tables, tell the user the connected user cannot see table metadata and stop.
+   - If a `get_services_list` tool is available, call it once and take the entry whose `id` is the service you query. Report `minReplicaMemoryGb`, `maxReplicaMemoryGb`, `numReplicas`, `idleScaling` and `idleTimeoutMinutes` as returned. These are the configured limits; `01` shows what the replicas have now. If min equals max, say that the service has a fixed size and does not scale vertically. If the tool is missing or the entry lacks a field, write "not available" for it. The tool does not return the tier; do not guess it. Do not output other fields of the entry (endpoints, IP access list, IAM role).
 3. Write the summary in the format below.
 4. Offer each result as a CSV the user can download (an artifact or a code block per query), named after the query file (for example `02_tables.csv`). Copy values exactly as returned. If a result has more than about 200 rows, do not retype it: say so and point to the export kit (`export.sh` or the SQL console, described in the repository's `export/README.md`), which writes the CSV directly.
 
@@ -51,6 +52,7 @@ Heading: "Sizing statistics (last N days, collected YYYY-MM-DD)", translated int
 | Item | Value | Source |
 |---|---|---|
 | Replicas and limits | count, CPU cores and memory per replica | 01 |
+| Configured scaling range | memory per replica min–max in GB, replica count, idling on/off and timeout | `get_services_list` |
 | Stored data | total compressed and uncompressed bytes, ratio | 02 |
 | Largest tables | top 5 by compressed bytes, with rows and ratio | 02 |
 | Ingest per day | average and maximum rows and uncompressed bytes per day | 04 |
