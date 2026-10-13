@@ -78,6 +78,8 @@ Click **Create**. When you change the agent later, click **Save** and wait for t
 
 The first time the agent calls the ClickHouse tool, it asks you to connect. If it does not, open **MCP settings** in the left bar, find **ClickHouse**, and click **Connect**. The agent sees only the organizations and services your Cloud user can access.
 
+Optional: cost, tier, backups and ClickPipes. The built-in **ClickHouse** server in Agents does not offer the Cloud tools for these (`get_organization_cost`, `list_service_backups`, `list_clickpipes` and others). To let the agent read them, add the ClickHouse Cloud remote MCP server as your own server in **MCP settings** (URL `https://mcp.clickhouse.cloud/mcp`, Streamable HTTP, sign in with OAuth), then add these of its tools to the agent: `get_organizations`, `get_services_list`, `get_service_details`, `get_organization_cost`, `list_service_backups`, `get_service_backup_configuration`, `list_clickpipes`, `get_clickpipe`. Its query tools duplicate the built-in ones and are not needed. Like any other server, every chat then waits until you have signed in to it. Without it, the agent points to the Cloud console for these.
+
 The queries leave out the connection's own reads of system tables but keep every other query of the same database user, so the PoC workload is counted even if it runs as the same user as the agent or an export. Queries that the agent runs on user tables carry `log_comment = 'poc-assistant'` and are left out; if the connection cannot change settings, they are counted and the agent says so.
 
 References: https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/quickstart , https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/builder/mcp-servers

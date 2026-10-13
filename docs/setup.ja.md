@@ -89,6 +89,8 @@ You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for e
 
 初めて ClickHouse のツールを使うときに、接続を求められます。求められない場合は、左のバーの **MCP設定** で **ClickHouse** を探し、**接続** を押します。エージェントから見えるのは、Cloud のユーザーがアクセスできる組織とサービスだけです。
 
+任意の設定として、費用、tier、バックアップ、ClickPipes も読ませられます。Agents に組み込みの **ClickHouse** サーバーには、これらを読む Cloud のツール（`get_organization_cost`、`list_service_backups`、`list_clickpipes` など）がありません。エージェントに読ませるには、**MCP設定** で ClickHouse Cloud のリモート MCP サーバーを自分のサーバーとして足します（URL は `https://mcp.clickhouse.cloud/mcp`、Streamable HTTP、OAuth でサインイン）。そのうえで、そのサーバーの次のツールをエージェントに足します：`get_organizations`、`get_services_list`、`get_service_details`、`get_organization_cost`、`list_service_backups`、`get_service_backup_configuration`、`list_clickpipes`、`get_clickpipe`。クエリ用のツールは組み込みのものと重なるので、足さなくてかまいません。ほかのサーバーと同じく、足すとそのサーバーにサインインするまで、どのチャットも先へ進みません。足さない場合は、これらについて Cloud コンソールを案内します。
+
 クエリは、この接続自身による system テーブルの読み取りを除きますが、同じ DB ユーザーのほかのクエリは残します。PoC の負荷をエージェントや書き出しと同じ DB ユーザーで流しても、負荷は数えられます。エージェントがユーザーのテーブルに流すクエリには `log_comment = 'poc-assistant'` を付けるので、数えられません。接続が設定を変えられないときは数えられ、エージェントがそのことを書きます。
 
 参考：https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/quickstart 、https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/builder/mcp-servers

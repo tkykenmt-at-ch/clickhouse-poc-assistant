@@ -58,6 +58,7 @@ If the file or either required section is missing, say which section is missing,
 2. For each success criterion, measure it for the last 24 hours and for the 7 days before, within its scope, and compare both with the pass threshold:
    - `Measured by: system tables` (or no such line; if the line is in another language, read its meaning and say how you read it): write one read-only query against system tables, run it, and show it.
    - `user tables, with approval`: follow the rule for queries on the user's own tables.
+   - `Cloud tools`: read it with the tools and rules in "Cloud tools" in `reference/checks-cloud-service.md`. For cost, compare yesterday's full day with the 7 days before, one or two days per call; today's row is partial. If the tools are not available in this conversation, treat it as `user` and say so.
    - `user`: take the latest value from `## Results` and give its date; if there is none, say the user has not recorded one.
 3. Find what is new or changed. Look only at these, so advice is not repeated on days when nothing changed:
    - new SELECT patterns from `22` that are among the heaviest (by `total_cpu_seconds`) or read most of their tables (`marks_read_ratio`)
@@ -67,6 +68,7 @@ If the file or either required section is missing, say which section is missing,
    - tables from `25` with `async_inserts_without_wait_24h` above 0: with `wait_for_async_insert = 0` the client is not told when a flush fails (https://clickhouse.com/docs/concepts/features/operations/insert/asyncinserts#choosing-a-return-mode)
    - error codes from `26`, and stuck or failing background work from `27`, judged with `reference/checks-errors-and-background.md`
    - failed async insert flushes from `28`, judged with "Did async insert flushes fail?" in `reference/checks-inserts-and-parts.md`
+   - if `list_clickpipes` is available, ClickPipes of this service whose `state` is not `Running` (see "Cloud tools" in `reference/checks-cloud-service.md`)
    For each of these, check the matching rule in the `clickhouse-best-practices` skill (and `clickhouse-architecture-advisor` for pattern choices) and the documentation search tool. Keep at most three findings that a rule or a documentation page supports; drop the rest. `sample_query` has literal values replaced by `?`; quote column names, JSON keys and functions from it.
 4. Write the note:
    - **Last 24 hours**: ingest and query volume against the previous 7-day average, p99 latency, errors, the table with the most parts in one partition. Mention only what changed notably.

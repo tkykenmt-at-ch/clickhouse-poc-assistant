@@ -13,7 +13,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 
 - Pass thresholds are the user's decision. Propose what to measure and how, and ask the user for the number. Never fill in a pass threshold yourself.
 - Every proposed criterion cites at least one URL from `reference/poc-criteria.md` or from the documentation search tool.
-- Measurement methods must be runnable read-only on ClickHouse Cloud. For each criterion, say who measures it: `system tables` (the daily note measures it every day), `user tables, with approval` (the assistant runs an aggregate query on the user's tables after the user approves it, for example the newest event time against `now()` for freshness), or `user` (the user measures it with a tool such as `clickhouse-benchmark`, or reads it in the Cloud console, and records the result in `## Results`).
+- Measurement methods must be runnable read-only on ClickHouse Cloud. For each criterion, say who measures it: `system tables` (the daily note measures it every day), `user tables, with approval` (the assistant runs an aggregate query on the user's tables after the user approves it, for example the newest event time against `now()` for freshness), `Cloud tools` (the assistant reads it with the ClickHouse Cloud tools for cost, backups or ClickPipes, described in "Cloud tools" in `reference/checks-cloud-service.md`; propose it only when those tools are available in this conversation), or `user` (the user measures it with a tool such as `clickhouse-benchmark`, or reads it in the Cloud console, and records the result in `## Results`).
 - Give each criterion a scope that the daily note can query the same way every day: the `log_comment` tags, tables or query types it covers. Suggest tagging test traffic with `log_comment` so latency criteria can be measured per tag.
 - Do not recommend a service size, a tier or a price.
 - Answer in the user's language (Japanese if the user writes in Japanese).
@@ -45,7 +45,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 1. Metric: <metric>
    Pass: <user's pass threshold>
    How to measure: <method>
-   Measured by: <system tables | user tables, with approval | user>
+   Measured by: <system tables | user tables, with approval | Cloud tools | user>
    Scope: <log_comment tags, tables or query types>
    Source: <URL>
 
@@ -58,4 +58,4 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 - <date> Plan created
 ```
 
-Write the plan in the user's language. Keep these four headings, either in English as above or as their Japanese equivalents (`## 対象`, `## 成功基準`, `## 結果`, `## 経緯`); translate the other labels inside the sections too, but keep `Measured by:` and its values (`system tables`, `user tables, with approval`, `user`) and `Scope:` in English, because the other skills read them literally. Tell the user that `## Results` is where the daily note's result lines and their own measurements go, so the PoC keeps its history beyond the 30 days that system tables keep.
+Write the plan in the user's language. Keep these four headings, either in English as above or as their Japanese equivalents (`## 対象`, `## 成功基準`, `## 結果`, `## 経緯`); translate the other labels inside the sections too, but keep `Measured by:` and its values (`system tables`, `user tables, with approval`, `Cloud tools`, `user`) and `Scope:` in English, because the other skills read them literally. Tell the user that `## Results` is where the daily note's result lines and their own measurements go, so the PoC keeps its history beyond the 30 days that system tables keep.
