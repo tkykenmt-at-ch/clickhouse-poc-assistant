@@ -16,7 +16,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 - Measurement methods must be runnable read-only on ClickHouse Cloud. For each criterion, say who measures it: `system tables` (the daily note measures it every day), `user tables, with approval` (the assistant runs an aggregate query on the user's tables after the user approves it, for example the newest event time against `now()` for freshness), `Cloud tools` (the assistant reads it with the ClickHouse Cloud tools for cost, backups or ClickPipes, described in "Cloud tools" in `reference/checks-cloud-service.md`; propose it only when those tools are available in this conversation), or `user` (the user measures it with a tool such as `clickhouse-benchmark`, or reads it in the Cloud console, and records the result in `## Results`).
 - Give each criterion a scope that the daily note can query the same way every day: the `log_comment` tags, tables or query types it covers. Suggest tagging test traffic with `log_comment` so latency criteria can be measured per tag.
 - Do not recommend a service size, a tier or a price.
-- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese).
 
 ## Steps

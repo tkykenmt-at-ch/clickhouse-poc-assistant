@@ -1,10 +1,11 @@
 # Sharing results with ClickHouse
 
-Rules every skill follows at the end of its output, so that what the assistant finds does not stay only with the user and can be checked by the ClickHouse team, without customer data leaving the conversation.
+Rules every skill follows, so that what the assistant finds does not stay only with the user and can be checked by the ClickHouse team, without customer data leaving the conversation.
 
-## Notice at the end of every output
+## When to show the notice
 
-- **Rule**: end every output with this notice, translated into the user's language: "This assistant can make mistakes. Before you decide on design, sizing or cost, check the findings with your ClickHouse Solutions Architect (SA) as needed. To share them, ask for a share report (`poc-share-report`): it leaves out your data." In Japanese: 「このアシスタントは誤ることがあります。設計・サイジング・費用を決める前に、必要に応じて ClickHouse の担当 SA に確認してください。共有するときは、データを含めない共有用レポート（`poc-share-report`）を頼んでください。」
+- **Rule**: show this one-line notice, translated into the user's language, only (1) at the end of the first answer in a conversation, and (2) at the end of a `poc-summary`, `poc-cost-projection` or `poc-share-report` output, because those are used for decisions. Do not repeat it on other answers. Text: "This assistant can make mistakes; check findings with your ClickHouse SA before you decide." In Japanese: 「このアシスタントは誤ることがあります。判断の前に、必要に応じて担当 SA に確認してください。」
+- **Rule**: mention the share report (`poc-share-report`) only when the user wants to share results with ClickHouse or asks how to, not as part of the notice.
 
 ## What a share report may contain
 

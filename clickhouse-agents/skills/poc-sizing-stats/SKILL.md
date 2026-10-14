@@ -18,7 +18,7 @@ You collect statistics used to size a production service. You read **system tabl
 - Reading system tables wakes an idled service and keeps it awake, and system tables keep about 30 days. Read `reference/checks-cloud-service.md` for these and for services in a warehouse.
 - The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - When you state how ClickHouse behaves (not a number from a query), confirm it with the documentation search tool and attach the URL.
-- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese).
 - The queries already exclude ClickHouse Cloud's own monitoring users (names ending in `-internal`) and your own connection. Do not add them back.
 - Do not output user names or e-mail addresses.

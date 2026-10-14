@@ -39,7 +39,7 @@ If the file or either required section is missing, say which section is missing,
 
   If the user does not approve, or the connection cannot read the table, stay with system tables and say what could not be checked.
 - When you state how ClickHouse behaves (not a number from a query), confirm it with the documentation search tool and attach the URL.
-- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese). Keep the note's prose under 40 lines; put the SQL you wrote in a section after the note, which does not count.
 
 ## Steps
