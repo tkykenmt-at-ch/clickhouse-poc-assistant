@@ -36,6 +36,7 @@ Remote MCP はサービスごとに有効にします。
 | `poc-load-test-review` | [poc-load-test-review-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-load-test-review-skill.zip) |
 | `poc-daily-progress` | [poc-daily-progress-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-daily-progress-skill.zip) |
 | `poc-summary` | [poc-summary-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-summary-skill.zip) |
+| `poc-cost-projection` | [poc-cost-projection-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-cost-projection-skill.zip) |
 | `clickhouse-architecture-advisor`（公開スキル、変更なし） | [clickhouse-architecture-advisor-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/clickhouse-architecture-advisor-skill.zip) |
 
 全部まとめた [poc-assistant-skills.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) もあります（展開すると上の表の zip が出てきます）。GitHub CLI なら次の 1 行です。
@@ -67,23 +68,23 @@ gh release download -R tkykenmt/clickhouse-poc-assistant -p '*-skill.zip'
 | 説明 | ClickHouse Cloud の PoC を手伝う。計画、サイジング用の統計、テーブル設計とクエリの見直し、日次の進捗（読み取りのみ） |
 | モデル | プロバイダー **Claude**、モデル `claude-sonnet-5-5`（一覧にあるほかのモデルでも動くはずですが、検証したのはこのモデルです） |
 | 指示文 | 下の英語の文 |
-| ツール | **ツールを追加** → **ClickHouse**（MCP サーバー）と **アーティファクト** |
+| ツール | **ツールを追加** → **ClickHouse**（MCP サーバー）、**アーティファクト**、**コードインタープリター** |
 | スキル | **Selected** にして、`poc-*` のスキルすべて、`clickhouse-best-practices`、`clickhouse-architecture-advisor` を追加 |
 
 指示文には、次の英語の文を貼ります。エージェントはユーザーの言葉で答えます。
 
 ```text
-You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for each request: poc-plan-builder to plan the PoC and its success criteria, poc-sizing-stats for sizing statistics, poc-schema-query-advisor to review table design and queries (judge with clickhouse-best-practices and clickhouse-architecture-advisor), poc-load-test-review to explain one load test (latency, CPU, reads, autoscaling) or compare two runs, poc-daily-progress for progress, the daily note and next actions, and poc-summary for a weekly or final PoC summary. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) in the file context. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price. Do not output user names or e-mail addresses. Present improvements as candidates to verify, not as decisions. Answer in the user's language.
+You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for each request: poc-plan-builder to plan the PoC and its success criteria, poc-sizing-stats for sizing statistics, poc-schema-query-advisor to review table design and queries (judge with clickhouse-best-practices and clickhouse-architecture-advisor), poc-load-test-review to explain one load test (latency, CPU, reads, autoscaling) or compare two runs, poc-daily-progress for progress, the daily note and next actions, poc-summary for a weekly or final PoC summary, and poc-cost-projection for a list-price cost projection from the user's production assumptions. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) in the file context. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Present improvements as candidates to verify, not as decisions. Answer in the user's language.
 ```
 
 <details>
 <summary>指示文の日本語訳（参考。貼るのは上の英語の文）</summary>
 
-あなたは ClickHouse Cloud の PoC を手伝うアシスタントです。依頼に応じてスキルを使い分けます。PoC の計画と成功基準づくりは poc-plan-builder、サイジング用の統計は poc-sizing-stats、テーブル設計とクエリの見直しは poc-schema-query-advisor（判断は clickhouse-best-practices と clickhouse-architecture-advisor に従う）、1 回の負荷試験の振り返り（レイテンシ、CPU、読み取り、オートスケール）と変更前後の比較は poc-load-test-review、進捗と日次のまとめとネクストアクションは poc-daily-progress、週次と最終の PoC のまとめは poc-summary です。PoC の対象と成功基準は、ファイルのコンテキストにある PoC 計画（poc-plan で始まるファイル）に書いてあります。どの依頼でも、system テーブルを読みます。ユーザーのテーブルにクエリを流すのは、見つけたことを確かめるときだけで、クエリと EXPLAIN ESTIMATE の見込みを示してユーザーの了承を得てからにします。返すのは集計で、行そのものは返しません。数字はクエリの結果だけから書き、推測しません。ClickHouse の振る舞いを述べるときは、ドキュメント検索で確かめて URL を付けます。サービスの規模、ティア、金額の推奨はしません。ユーザー名やメールアドレスは出しません。改善の案は、決定ではなく確かめる候補として出します。ユーザーの言葉で答えます。
+あなたは ClickHouse Cloud の PoC を手伝うアシスタントです。依頼に応じてスキルを使い分けます。PoC の計画と成功基準づくりは poc-plan-builder、サイジング用の統計は poc-sizing-stats、テーブル設計とクエリの見直しは poc-schema-query-advisor（判断は clickhouse-best-practices と clickhouse-architecture-advisor に従う）、1 回の負荷試験の振り返り（レイテンシ、CPU、読み取り、オートスケール）と変更前後の比較は poc-load-test-review、進捗と日次のまとめとネクストアクションは poc-daily-progress、週次と最終の PoC のまとめは poc-summary、ユーザーが決めた本番の前提からの定価ベースの費用試算は poc-cost-projection です。PoC の対象と成功基準は、ファイルのコンテキストにある PoC 計画（poc-plan で始まるファイル）に書いてあります。どの依頼でも、system テーブルを読みます。ユーザーのテーブルにクエリを流すのは、見つけたことを確かめるときだけで、クエリと EXPLAIN ESTIMATE の見込みを示してユーザーの了承を得てからにします。返すのは集計で、行そのものは返しません。数字はクエリの結果だけから書き、推測しません。ClickHouse の振る舞いを述べるときは、ドキュメント検索で確かめて URL を付けます。サービスの規模、ティア、金額の推奨はしません。費用試算はユーザーが決めた前提で計算するもので、見積もりではありません。ユーザー名やメールアドレスは出しません。改善の案は、決定ではなく確かめる候補として出します。ユーザーの言葉で答えます。
 
 </details>
 
-ツールはこの 2 つだけにします。ほかの MCP サーバー（たとえば ClickStack）のツールを足すと、そのサーバーにもサインインするまで、どのチャットも先へ進みません。チャットはこのエージェントで始めます。組み込みの ClickHouse Agent はスキルが Off になっています。正しく設定できていれば、回答の最初に `poc-*` のスキルを読み込む表示が出ます。
+ツールはこの 3 つだけにします。コードインタープリターは、`poc-cost-projection` が同梱のスクリプトを動かすのに使います。検証ではそのサンドボックスからネットワークに出られなかったので、スキルは同梱している価格表の写し（毎日更新）を読みます。ほかの MCP サーバー（たとえば ClickStack）のツールを足すと、そのサーバーにもサインインするまで、どのチャットも先へ進みません。チャットはこのエージェントで始めます。組み込みの ClickHouse Agent はスキルが Off になっています。正しく設定できていれば、回答の最初に `poc-*` のスキルを読み込む表示が出ます。
 
 **作成** を押します。あとで変えるときは **保存** を押し、「正常に更新されました」の表示が出るまで待ってください。表示を待たないと、変更が消えることがあります。
 
@@ -114,6 +115,7 @@ You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for e
 | 「poc-daily-progress で今日の PoC のまとめを書いてください」 | `poc-daily-progress` |
 | 「今日の 10:00〜10:20 と 14:00〜14:20（JST）の負荷試験を比べてください。間で並び替えのキーを変えました」 | `poc-load-test-review` |
 | 「今週のレビュー用に PoC のまとめを書いてください」 | `poc-summary` |
+| 「本番の月額費用を試算してください。Enterprise、AWS ap-northeast-1、2 レプリカ × 32 GiB、24 時間稼働、圧縮後 5 TB」 | `poc-cost-projection` |
 
 日次のまとめは毎朝（出てくる結果の行は計画の `## 結果` に貼ります）、総点検と `poc-summary` は週に 1 回、最後にもう一度 `poc-summary` を目安にします。
 

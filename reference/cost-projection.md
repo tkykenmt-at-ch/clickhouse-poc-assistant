@@ -1,0 +1,37 @@
+# Cost projection: methods and rules
+
+Two methods give a list-price projection of a production service from the PoC. Both use only public prices, read from https://clickhouse.com/pricing.md or its copy in `reference/pricing-snapshot.md` (see "Reading the price list"), and the PoC's own measurements and bill. Neither is a quote.
+
+## What every projection states
+
+- **Rule**: state the plan (tier), cloud and region of every rate, the time the price list was fetched (or the date the user read a rate), and that the figures are list prices without discounts or committed-spend terms. 1 CHC = 1 USD. For a quotable figure, point to the calculator on https://clickhouse.com/pricing ; above 200 TB of ingest per month or for commitments, to sales. Do not round a rate; round only totals, to whole dollars.
+- **Rule**: the production assumptions (tier, cloud, region, replicas, memory per replica, hours active per day, data kept, backup retention, egress, ClickPipes) are the user's. Do not choose them, and do not recommend a size, a tier or a price. You may show the PoC's measured values next to each assumption as reference, labelled as measured. A memory size that is not on the calculator's list in the price list's "How pricing is calculated" is snapped there to the nearest size; say which size you used. Single-replica services are limited to 8–12 GiB.
+- **Rule**: a month is 30.5 days (732 hours at 24 hours a day), as in the calculator's formula.
+- **Source**: https://clickhouse.com/pricing.md , https://clickhouse.com/docs/products/cloud/reference/billing/billing-overview#faqs
+
+## Reading the price list
+
+- **Rule**: read the price list in each conversation, before picking a rate; do not reuse rates from memory or an earlier conversation. Run `tools/fetch_url.py` with the code tool, with the sections you need:
+  `python3 tools/fetch_url.py https://clickhouse.com/pricing.md --section "How pricing is calculated" --section "Compute & storage rates by region" --section "Backups" --section "Data transfer" --section "ClickPipes" --section "Agent instructions"`
+  The skill's `SKILL.md` gives the full path of the file. The first line of the output is the fetch time; state it with the rates. Follow the page's "Agent instructions". If the code tool is not available or the fetch fails (the code sandbox in ClickHouse Agents has no network), read `reference/pricing-snapshot.md` instead: a copy of the same page, refreshed every day in the repository and released when it changes. Say that the rates come from the copy and give its "Copied on" date. If the user has newer rates from https://clickhouse.com/pricing, use theirs with the date they read them. Do not use rates from anywhere else.
+- **Source**: https://clickhouse.com/pricing.md
+
+## Where the rates come from
+
+- **Rule**: take compute ($ per compute unit per hour) and storage ($ per TB-month) for the user's tier, cloud and region from the price list's rate table. When it was checked (2026-10-14), the table listed Enterprise rates only; use what it lists now. For Basic or Scale, or a region it does not list, use, in this order: the rate derived from the PoC's bill (method A) when the PoC runs on the same tier, cloud and region; otherwise ask the user to read the rate from the calculator on https://clickhouse.com/pricing, and label it with the date they read it. Do not take a rate from another tier or region.
+- **Rule**: backups are billed at the storage rate. Data transfer is billed per GB of egress at the region's public internet or inter-region rate (the price list's "Data transfer" table); ingress is free. Streaming ClickPipes are billed per compute unit hour ($0.20 per unit, the default replica is 0.0625 units) plus $0.04 per GB ingested; object-storage ClickPipes for compute only.
+- **Source**: https://clickhouse.com/pricing.md , https://clickhouse.com/docs/products/cloud/reference/billing/clickpipes/clickpipes-for-streaming-and-object-storage
+
+## Method A: from the PoC's bill
+
+- **Needs**: the Cloud tools (`get_organization_cost`; see "Cloud tools" in `reference/checks-cloud-service.md`). Without them, ask the user for the daily cost per line item from the console's usage breakdown, or use method B only.
+- **Rule**: read 7 full days (not today), one or two days per call, and take this service's rows. Report the PoC's actual cost per day and its monthly equivalent (× 30.5) per line item: `computeCHC`, `storageCHC`, `backupCHC`, data transfer, ClickPipes. Days with a load test or an unusual size are part of the bill; name them and give the mean with and without them.
+- **Rule (derived rates)**: compute unit hours used on a day = `computeCHC` ÷ compute rate. When the rate is not known (Basic, Scale), derive it only from a day on which the service ran all day at one size: `computeCHC` ÷ (replicas × memory per replica ÷ 8 × 24). Check that day with `queries/01_service.sql` (`uptime_seconds` over 86,400 at the end of the day, or the replicas in `queries/08_resources_hourly.sql` for every hour) and with `idleScaling`; if you cannot show it, do not derive the rate. Storage rate = `storageCHC` × 30.5 ÷ compressed TB stored (`queries/02_tables.sql`, TB = 10^12 bytes); this includes every table of the warehouse, so it is approximate. The cost values are rounded to 0.001 CHC, so derive a rate only from a day on which the line item is at least 1 CHC; below that, do not derive it, and use the price list or ask the user. Compare a derived rate with the price list when it has the tier and region; a difference over 5% means the assumption behind it was wrong (size changed, the service idled, or the warehouse holds other services) — say so.
+- **Rule (projection)**: production compute per month = production compute unit hours per month × compute rate; the PoC's compute unit hours per day, from above, are the reference for that number, not a substitute for the user's assumption. Production storage per month = production compressed TB × storage rate. Show the PoC actual, the production projection and the ratio between them per line item.
+
+## Method B: from the price list
+
+- **Needs**: the price list and the user's assumptions.
+- **Rule**: compute per month = replicas × memory per replica (GiB) ÷ 8 × hours active per day × 30.5 × compute rate. Storage per month = compressed TB kept × storage rate. When the user gives uncompressed volume, use the compression ratio measured in the PoC (`compression_ratio` in `queries/02_tables.sql`, for the tables that will hold the production data), not the page's 10×, and say which. Compressed TB kept = compressed TB per day × days kept, when data grows at a steady rate. Backups per month = backup TB kept × storage rate; with the default (one backup a day, kept 1 day) assume one full copy of the data, and for longer retention ask the user how many full copies they expect (the pricing page estimates an incremental backup at 1% of a full one). Egress per month = GB per month × the region's rate. ClickPipes per month = replicas × units per replica × 732 × $0.20 + GB ingested × $0.04 (streaming).
+- **Rule**: show each line item with its formula and inputs filled in, then the total. If an input is unknown, leave the line out and list it as not included, rather than assuming a value.
+- **Source**: https://clickhouse.com/pricing.md

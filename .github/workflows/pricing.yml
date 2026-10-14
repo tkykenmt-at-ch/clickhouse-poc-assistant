@@ -1,0 +1,48 @@
+name: pricing
+
+# Every day, copy https://clickhouse.com/pricing.md into reference/pricing-snapshot.md.
+# When anything but the copy date changed, commit it, tag the next patch version and start
+# the build workflow on that tag, which publishes the release.
+
+on:
+  schedule:
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy the pricing page
+        run: scripts/fetch-pricing.sh
+
+      - name: Release when the prices changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f=reference/pricing-snapshot.md
+          if git diff --quiet -I '^Copied on ' -- "$f"; then
+            echo "No change besides the copy date."
+            git checkout -- "$f"
+            exit 0
+          fi
+          git diff --stat -- "$f"
+          last="$(git tag --list 'v*' --sort=-v:refname | head -1)"
+          IFS=. read -r major minor patch <<<"${last#v}"
+          next="v${major}.${minor}.$((patch + 1))"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh the pricing snapshot" -- "$f"
+          git tag "$next"
+          git push origin HEAD:main "$next"
+          # A tag pushed with GITHUB_TOKEN does not start other workflows; workflow_dispatch does.
+          gh workflow run build.yml --ref "$next"
+          echo "Released $next"

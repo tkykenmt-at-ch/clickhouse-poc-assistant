@@ -2,7 +2,7 @@
 # Build the distributable zips into dist/:
 #   ch-sizing-export.zip  export kit for users (README in English and Japanese, setup_user.sql, export.sh, queries/)
 #   <skill>-skill.zip     one per directory in clickhouse-agents/skills/, with SKILL.md and
-#                         exactly the files it references (queries/.../*.sql, reference/*.md)
+#                         exactly the files it references (queries/.../*.sql, reference/*.md, tools/*.py)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST="$ROOT/dist"; TMP="$(mktemp -d)"
@@ -22,10 +22,10 @@ for dir in "$ROOT"/clickhouse-agents/skills/*/; do
   mkdir -p "$out"
   cp "$dir/SKILL.md" "$ROOT/LICENSE" "$out/"
   # The agent cannot list folders, so SKILL.md names every file; ship exactly those.
-  refs="$(grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md)' "$dir/SKILL.md" | sort -u)"
+  refs="$(grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md|tools/[A-Za-z0-9_-]+\.py)' "$dir/SKILL.md" | sort -u)"
   # Reference files can point to other reference files and to queries; ship those too (until nothing new is found).
   while :; do
-    more="$(for r in $refs; do case "$r" in reference/*) if [ -f "$ROOT/$r" ]; then grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md)' "$ROOT/$r" || true; fi;; esac; done | sort -u)"
+    more="$(for r in $refs; do case "$r" in reference/*) if [ -f "$ROOT/$r" ]; then grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md|tools/[A-Za-z0-9_-]+\.py)' "$ROOT/$r" || true; fi;; esac; done | sort -u)"
     all="$(printf '%s\n%s\n' "$refs" "$more" | grep -v '^$' | sort -u)"
     [ "$all" = "$refs" ] && break
     refs="$all"
