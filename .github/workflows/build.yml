@@ -66,6 +66,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -76,7 +78,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          notes="Skill zips for ClickHouse Agents, a bundle of all skill zips, and the export kit, built from ${GITHUB_SHA}. See docs/setup.md for how to install them."
+          # The release notes are the annotated tag's message, followed by what the assets are.
+          git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          changes="$(git for-each-ref "refs/tags/${GITHUB_REF_NAME}" --format='%(contents)')"
+          assets="Skill zips for ClickHouse Agents, a bundle of all skill zips, and the export kit, built from ${GITHUB_SHA}. See docs/setup.md for how to install them."
+          notes="$(printf '%s\n\n%s' "$changes" "$assets")"
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber
           else

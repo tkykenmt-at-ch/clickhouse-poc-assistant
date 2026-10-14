@@ -41,7 +41,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh the pricing snapshot" -- "$f"
-          git tag "$next"
+          git tag -a "$next" -m "Refresh the pricing snapshot from https://clickhouse.com/pricing.md (prices changed)."
           git push origin HEAD:main "$next"
           # A tag pushed with GITHUB_TOKEN does not start other workflows; workflow_dispatch does.
           gh workflow run build.yml --ref "$next"
