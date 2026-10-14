@@ -2,3 +2,4 @@ dist/
 .DS_Store
 sizing_export_*
 scripts/.ab_*
+__pycache__/
