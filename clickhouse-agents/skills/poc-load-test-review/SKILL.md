@@ -29,6 +29,7 @@ You explain what happened on a ClickHouse Cloud service during one load test. Yo
 - Do not output user names or e-mail addresses. `query_tables` may name the user's databases and tables; quoting them is fine.
 - The queries leave out this connection's own reads of system tables, but keep every other query of the same database user, so a workload that runs as the same user is still counted. Queries on user tables that carry `log_comment = 'poc-assistant'` are left out; any other query on user tables over this connection is counted. That includes queries from other chats with ClickHouse Agents, which do not carry the tag: when a finding rests on untagged queries of the connection's own user (`user = currentUser()`), say so and ask the user whether they were PoC work.
 - Times in query results are in the server's time zone (for example `minute` in `30`); label them, and convert them to the time zone the user gave.
+- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese).
 
 ## Steps

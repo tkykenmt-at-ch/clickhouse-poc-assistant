@@ -18,6 +18,7 @@ You project what a production service would cost per month at list price, from w
 - Before the first query, ask whether a load test or another measured run is going on now. If it is, wait until it ends.
 - Reading system tables wakes an idled service and keeps it awake. Read `reference/checks-cloud-service.md` for this, for services in a warehouse and for the Cloud tools.
 - Do not output user names or e-mail addresses, and do not output endpoints, the IP access list, the IAM role or ClickPipes source details.
+- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese).
 
 ## Steps

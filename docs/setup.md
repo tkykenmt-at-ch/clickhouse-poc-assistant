@@ -7,7 +7,7 @@ This guide sets up the "PoC assistant" agent in [ClickHouse Agents](https://clic
 ## Quick start
 
 1. Enable the Remote MCP server on the service ([step 1](#1-enable-the-remote-mcp-server-on-the-service)).
-2. Download the eight skill zips ([step 2](#2-download-the-skills)).
+2. Download the nine skill zips ([step 2](#2-download-the-skills)).
 3. Upload each zip as a skill in ClickHouse Agents ([step 3](#3-upload-the-skills)).
 4. Create the agent and paste the instructions ([step 4](#4-create-the-agent)).
 5. Build the PoC plan with the agent and attach it ([step 5](#5-plan-the-poc-and-attach-the-plan)).
@@ -35,9 +35,10 @@ Download from the latest release, one by one:
 | `poc-daily-progress` | [poc-daily-progress-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-daily-progress-skill.zip) |
 | `poc-summary` | [poc-summary-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-summary-skill.zip) |
 | `poc-cost-projection` | [poc-cost-projection-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-cost-projection-skill.zip) |
+| `poc-share-report` | [poc-share-report-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-share-report-skill.zip) |
 | `clickhouse-architecture-advisor` (public skill, unmodified) | [clickhouse-architecture-advisor-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/clickhouse-architecture-advisor-skill.zip) |
 
-Or get all eight at once as [poc-assistant-skills.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) (unzip it to get the eight skill zips), or with the GitHub CLI:
+Or get all nine at once as [poc-assistant-skills.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) (unzip it to get the nine skill zips), or with the GitHub CLI:
 
 ```bash
 gh release download -R tkykenmt/clickhouse-poc-assistant -p '*-skill.zip'
@@ -50,7 +51,7 @@ gh release download -R tkykenmt/clickhouse-poc-assistant -p '*-skill.zip'
 1. In the Cloud console, open **ClickHouse agents** in the left navigation.
 2. Open **Skills** in the left bar of ClickHouse Agents.
 3. For each skill zip: **Create skill** (+) → **Upload skill** → choose the zip. ClickHouse Agents takes one skill per upload.
-4. Check that the eight skills are listed.
+4. Check that the nine skills are listed.
 
 Reference: https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/builder/skills
 
@@ -70,7 +71,7 @@ Open **Agent Builder**, choose **Create new agent**, and set:
 Instructions:
 
 ```text
-You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for each request: poc-plan-builder to plan the PoC and its success criteria, poc-sizing-stats for sizing statistics, poc-schema-query-advisor to review table design and queries (judge with clickhouse-best-practices and clickhouse-architecture-advisor), poc-load-test-review to explain one load test (latency, CPU, reads, autoscaling) or compare two runs, poc-daily-progress for progress, the daily note and next actions, poc-summary for a weekly or final PoC summary, and poc-cost-projection for a list-price cost projection from the user's production assumptions. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) in the file context. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Present improvements as candidates to verify, not as decisions. Answer in the user's language.
+You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for each request: poc-plan-builder to plan the PoC and its success criteria, poc-sizing-stats for sizing statistics, poc-schema-query-advisor to review table design and queries (judge with clickhouse-best-practices and clickhouse-architecture-advisor), poc-load-test-review to explain one load test (latency, CPU, reads, autoscaling) or compare two runs, poc-daily-progress for progress, the daily note and next actions, poc-summary for a weekly or final PoC summary, poc-cost-projection for a list-price cost projection from the user's production assumptions, and poc-share-report for a report the user can send to their ClickHouse SA. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) in the file context. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Present improvements as candidates to verify, not as decisions. End every answer with a note that the assistant can make mistakes and that the findings should be checked with the ClickHouse SA as needed. Answer in the user's language.
 ```
 
 Add only these tools. Code Interpreter lets `poc-cost-projection` run its bundled script; its sandbox had no network in testing, so the skill reads the daily copy of the price list it ships with. A tool for another MCP server (for example ClickStack) makes every chat wait until you have signed in to that server too. Use this agent, not the built-in ClickHouse Agent, whose skills are off: the answer should start by loading a `poc-*` skill.
@@ -104,6 +105,7 @@ The plan needs the sections `## Target` and `## Success criteria`, and optionall
 | "Compare the load tests from 10:00 to 10:20 and 14:00 to 14:20 JST today; the sorting key changed in between." | `poc-load-test-review` |
 | "Write the PoC summary for this week's review." | `poc-summary` |
 | "Project the monthly cost in production: Enterprise, AWS ap-northeast-1, 2 replicas × 32 GiB, 24 hours a day, 5 TB compressed." | `poc-cost-projection` |
+| "Write a share report for our SA about today's findings." | `poc-share-report` |
 
 Suggested rhythm: the daily note every morning (paste its result lines into the plan's `## Results`), the full review and `poc-summary` once a week, and `poc-summary` again at the end.
 

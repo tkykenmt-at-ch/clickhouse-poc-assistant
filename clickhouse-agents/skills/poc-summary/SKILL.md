@@ -42,6 +42,7 @@ If the file, `## Target` or `## Success criteria` is missing, say which, and sto
 - Do not output user names or e-mail addresses. Do not quote literal values from query text.
 - When you state how ClickHouse behaves (not a number from a query), cite a URL from the `reference/` files or confirm it with the documentation search tool and attach the URL. The URLs in the `reference/` files have been checked; cite them as they are.
 - Times in query results are in the server's time zone; label them.
+- End every output with the notice in "Notice at the end of every output" in `reference/sharing.md`. When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
 - Answer in the user's language (Japanese if the user writes in Japanese).
 
 ## Steps
