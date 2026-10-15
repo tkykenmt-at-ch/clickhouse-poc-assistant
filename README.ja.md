@@ -20,7 +20,7 @@ ClickHouse Cloud の PoC（概念実証）を手伝うツールをまとめた�
 公開スキル [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills)（Apache-2.0）の 2 つを、変更せずに使います。
 `clickhouse-best-practices`（ClickHouse Agents に組み込み）と `clickhouse-architecture-advisor` です。
 
-**導入：** [最新のリリース](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest)から zip をダウンロードし、[docs/setup.ja.md](docs/setup.ja.md) の手順に従います。
+**導入：** [最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)から zip をダウンロードし、[docs/setup.ja.md](docs/setup.ja.md) の手順に従います。
 
 ## 構成
 
@@ -73,4 +73,4 @@ scripts/test-queries.sh         # PATH に clickhouse のバイナリが必要
 
 - ClickHouse 26.7 と 26.8 で、最小権限の DB ユーザーとして全クエリが通ります（`scripts/test-queries.sh`、CI で実行）。ClickHouse Cloud（26.6）の検証用サービスでも、全クエリがエラーなく動きます。
 - 使っていないもの：ClickHouse Agents のメモリ（手で作ったメモリが検証では会話に渡らなかった）、定期実行（ClickHouse のツールを付けたエージェントで予定を作ると、MCP の再接続を求められ続けた）、Agent API（使えない）。日次のまとめと週次の総点検は、エージェントに頼んで実行します。
-- 変更点と各変更の確かめ方は [Releases](https://github.com/tkykenmt/clickhouse-poc-assistant/releases)、既知の問題と予定は [Issues](https://github.com/tkykenmt/clickhouse-poc-assistant/issues) にあります。
+- 変更点と各変更の確かめ方は [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases)、既知の問題と予定は [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues) にあります。

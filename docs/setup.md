@@ -28,20 +28,20 @@ Download from the latest release, one by one:
 
 | Skill | Download |
 |---|---|
-| `poc-plan-builder` | [poc-plan-builder-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-plan-builder-skill.zip) |
-| `poc-sizing-stats` | [poc-sizing-stats-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-sizing-stats-skill.zip) |
-| `poc-schema-query-advisor` | [poc-schema-query-advisor-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-schema-query-advisor-skill.zip) |
-| `poc-load-test-review` | [poc-load-test-review-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-load-test-review-skill.zip) |
-| `poc-daily-progress` | [poc-daily-progress-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-daily-progress-skill.zip) |
-| `poc-summary` | [poc-summary-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-summary-skill.zip) |
-| `poc-cost-projection` | [poc-cost-projection-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-cost-projection-skill.zip) |
-| `poc-share-report` | [poc-share-report-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-share-report-skill.zip) |
-| `clickhouse-architecture-advisor` (public skill, unmodified) | [clickhouse-architecture-advisor-skill.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/clickhouse-architecture-advisor-skill.zip) |
+| `poc-plan-builder` | [poc-plan-builder-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-plan-builder-skill.zip) |
+| `poc-sizing-stats` | [poc-sizing-stats-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-sizing-stats-skill.zip) |
+| `poc-schema-query-advisor` | [poc-schema-query-advisor-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-schema-query-advisor-skill.zip) |
+| `poc-load-test-review` | [poc-load-test-review-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-load-test-review-skill.zip) |
+| `poc-daily-progress` | [poc-daily-progress-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-daily-progress-skill.zip) |
+| `poc-summary` | [poc-summary-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-summary-skill.zip) |
+| `poc-cost-projection` | [poc-cost-projection-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-cost-projection-skill.zip) |
+| `poc-share-report` | [poc-share-report-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-share-report-skill.zip) |
+| `clickhouse-architecture-advisor` (public skill, unmodified) | [clickhouse-architecture-advisor-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/clickhouse-architecture-advisor-skill.zip) |
 
-Or get all nine at once as [poc-assistant-skills.zip](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) (unzip it to get the nine skill zips), or with the GitHub CLI:
+Or get all nine at once as [poc-assistant-skills.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) (unzip it to get the nine skill zips), or with the GitHub CLI:
 
 ```bash
-gh release download -R tkykenmt/clickhouse-poc-assistant -p '*-skill.zip'
+gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
 ```
 
 `clickhouse-best-practices` is built into ClickHouse Agents and needs no download. `ch-sizing-export.zip` in the release is the export kit for users who run the queries themselves; the agent does not need it. To build the zips from source instead, see [Build](../README.md#build).

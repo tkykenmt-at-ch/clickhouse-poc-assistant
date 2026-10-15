@@ -17,7 +17,7 @@ Tools that help run a ClickHouse Cloud proof of concept (PoC). The work is split
 
 Two public skills from [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills) (Apache-2.0) are used unmodified: `clickhouse-best-practices` (built into ClickHouse Agents) and `clickhouse-architecture-advisor`.
 
-**To install:** download the zips from the [latest release](https://github.com/tkykenmt/clickhouse-poc-assistant/releases/latest) and follow [docs/setup.md](docs/setup.md).
+**To install:** download the zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and follow [docs/setup.md](docs/setup.md).
 
 ## Repository layout
 
@@ -68,4 +68,4 @@ Each skill zip contains its `SKILL.md`, the license, and exactly the files the s
 
 - All queries pass on ClickHouse 26.7 and 26.8 as a least-privilege user (`scripts/test-queries.sh`, run by CI), and run without errors on a ClickHouse Cloud (26.6) test service.
 - Not used: ClickHouse Agents memory (manually created memories did not reach the agent in testing), scheduled chats (creating a schedule for an agent with the ClickHouse tool kept asking to reconnect the MCP server), and the Agent API (not available). Ask the agent for the daily note and the weekly review.
-- What changed and how each change was tested: [Releases](https://github.com/tkykenmt/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt/clickhouse-poc-assistant/issues).
+- What changed and how each change was tested: [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues).
