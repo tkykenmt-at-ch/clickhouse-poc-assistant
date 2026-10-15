@@ -52,7 +52,7 @@ gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
 
 `clickhouse-best-practices` は ClickHouse Agents に組み込まれているので、ダウンロードは不要です。
 リリースにある `ch-sizing-export.zip` は、ユーザーが自分でクエリを実行するための一式で、エージェントには使いません。
-ソースから zip を作る場合は、[README の作り方](../README.ja.md#作り方)を見てください。
+ソースから zip を作る場合は、[開発者向けの作り方](development.ja.md#作り方)を見てください。
 
 ## 3. スキルをアップロードする
 

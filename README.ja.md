@@ -1,74 +1,114 @@
-# clickhouse-poc-assistant
+<div align="center">
 
-[English](README.md)
+# PoC Assistant
 
-ClickHouse Cloud の PoC（概念実証）を手伝うツールをまとめたリポジトリです。
-役割ごとにスキルを分け、[ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents) のエージェント「PoC アシスタント」が依頼に応じて使い分けます。
-どのツールも **system テーブル** を読みます。サイジングとオートスケールの説明では、ClickHouse Agents の ClickHouse ツール（`get_services_list`）から、サービスに設定されたメモリの範囲とレプリカ数も読みます。アドバイザー、負荷試験の振り返り、日次のまとめのスキルは、見つけたことを確かめるときだけ、ユーザーの了承を得てからユーザーのテーブルにクエリを流し、行そのものではなく集計を返します。サイジングのスキルと書き出しの一式は、ユーザーのテーブルを読みません。
+**powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
 
-| スキル | 役割 |
-|---|---|
-| `poc-plan-builder` | ユーザーにワークロードを聞き、成功基準の案を測り方と公開資料の出典つきで出し、PoC 計画を Markdown で書き出す。合格ラインはユーザーが決める |
-| `poc-sizing-stats` | サイジング用の統計（保存量、圧縮率、投入の量とピーク、クエリの量、1 回あたりの重さ）を集め、要約と CSV にする |
-| `poc-schema-query-advisor` | テーブル設計、クエリの型、投入の形を見て、改善の候補を最大 5 件、根拠のルールかドキュメントと確かめ方つきで出す |
-| `poc-load-test-review` | 負荷試験の時間帯を見て、レイテンシの内訳（CPU、CPU の空き待ち、I/O）、レプリカの CPU が足りていたか、読んだ行数と返した行数の差、オートスケールが動いた・動かなかった理由を、根拠のドキュメントつきで書く。変更の前後の2回の試験の比較もする |
-| `poc-daily-progress` | 日次のまとめ。直近 24 時間の変化、成功基準ごとの状況、変化したテーブルとクエリへの助言（最大 3 件）、ネクストアクションを書く。エージェントに添付した PoC 計画を読み、計画の `## 結果` に貼る結果の行を出す |
-| `poc-summary` | 週次または最終の PoC のまとめ。成功基準ごとの PoC 全体の結果と根拠、週ごとの推移、途中で変えたこと、残るリスク、次の作業を、判断する人向けに書く。30 日より前の週は計画の `## 結果` を使う |
-| `poc-cost-projection` | ユーザーが決めた本番の前提から、月額の定価ベースの費用を2通りで試算する。PoC の実際の請求からの割り戻しと、公開の価格表（https://clickhouse.com/pricing.md 、または毎日更新する写し）から。式、単価、その日付をすべて示す。見積もりではない |
-| `poc-share-report` | 会話で見つけたこと、集計した数字、使ったチェック、確認したいことを、ClickHouse の担当 SA に送れるレポートにする。ユーザーのテーブルのデータは入れず、名前はラベルに置き換える。アシスタントは誤ることがあるので必要に応じて SA に確認してほしい旨を、会話の最初の回答と、判断に使う出力（まとめ、費用試算、共有用レポート）の最後に 1 行だけ添える |
+ClickHouse Cloud の PoC（概念実証）を、推測でなく根拠で進めるためのエージェントです。<br>
+サービスの system テーブルと公式ドキュメントを読み、数値とその根拠を添えて答えます。
 
-公開スキル [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills)（Apache-2.0）の 2 つを、変更せずに使います。
-`clickhouse-best-practices`（ClickHouse Agents に組み込み）と `clickhouse-architecture-advisor` です。
+[![Release](https://img.shields.io/github/v/release/tkykenmt-at-ch/clickhouse-poc-assistant?label=release)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-**導入：** [最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)から zip をダウンロードし、[docs/setup.ja.md](docs/setup.ja.md) の手順に従います。
-各段で何が返るかは、[通しの手順](docs/walkthrough.ja.md)で見られます。合成データの PoC を 1 件、計画から共有レポートまで画面つきで追います。
+[始め方](#始め方) | [通しの手順](docs/walkthrough.ja.md) | [導入の手順](docs/setup.ja.md) | [English](README.md)
 
-## 構成
+<img src="docs/images/ja/1-request.png" alt="自分の言葉で頼んだ一言と、選ばれたスキル" width="760">
 
-| 場所 | 中身 |
-|---|---|
-| `queries/` | サイジング用の SQL（01〜08）。ほかのツールはすべてここを正本にする |
-| `queries/optional/` | クエリの文面の例を含む SQL。既定では使わない |
-| `queries/advisor/` | アドバイザー用の SQL（10〜13） |
-| `queries/progress/` | 日次のまとめ用の SQL（20〜28。22 以降は変化を拾い、26〜28 はエラー、バックグラウンドの処理、非同期 INSERT の書き出しを見る） |
-| `queries/loadtest/` | 負荷試験の時間帯を見る SQL（30〜31）と、2回の試験を比べる SQL（32） |
-| `reference/poc-criteria.md` | PoC の評価の観点と測り方。出典は公開資料（ClickHouse のドキュメントと clickhouse.com/blog の事例）だけ |
-| `reference/checks-*.md` | 動いているサービスを見る観点。分野ごとに 1 ファイル（CPU と同時実行、読み取りとクエリ、INSERT とパーツ、エラーとバックグラウンドの処理、オートスケールと試験の組み方、Cloud のサービス）。観点ごとに、読む列、判断の基準、公開の出典を書く。同梱の設計のルール（`clickhouse-best-practices`）はテーブルと INSERT の作り方を扱い、こちらはワークロードが動き出してから見るものを扱う |
-| `clickhouse-agents/skills/` | スキル（スキルごとの `SKILL.md`） |
-| `export/` | ユーザーが自分で統計を書き出すための一式（`export.sh`（bash と curl）か SQL コンソールで実行） |
-| `scripts/build.sh` | スキルの zip と書き出しの一式を `dist/` に作る |
-| `scripts/fetch-public-skills.sh` | 公開スキルを、コミットを固定して変更せずに取得し、ライセンスと一緒に zip にする |
-| `scripts/bundle.sh` | スキルの zip をまとめて `dist/poc-assistant-skills.zip` にする |
-| `scripts/test-queries.sh` | 使い捨てのローカルの ClickHouse サーバーで、最小権限の DB ユーザーとして全クエリを実行する |
-| `.github/workflows/build.yml` | CI とリリース（下記） |
-| `docs/` | 導入の手順と通しの手順（画面は `docs/images/`） |
-| `LICENSE` | Apache-2.0。どの zip にも写しを入れる。公開スキルの zip には ClickHouse/agent-skills のライセンスを入れる |
+</div>
 
-## 作り方
+> [!NOTE]
+> オープンソース（Apache-2.0）のプロジェクトで、ClickHouse がサポートする製品ではありません。
 
-GitHub Actions が、push とプルリクエストのたびに次を実行します。SQL の構文の確認、使い捨てのサーバーでの全クエリの実行（`scripts/test-queries.sh`）、ShellCheck、zip の作成です。`v*` のタグを push すると、zip がリリースに載ります。手元で作る場合は次のとおりです。
+## 使いどころ
 
-```bash
-scripts/build.sh                # dist/ch-sizing-export.zip と dist/<スキル名>-skill.zip
-scripts/fetch-public-skills.sh  # dist/clickhouse-architecture-advisor-skill.zip
-scripts/bundle.sh               # dist/poc-assistant-skills.zip
-scripts/test-queries.sh         # PATH に clickhouse のバイナリが必要
+PoC の段階ごとにスキルがあります。自分の言葉で頼めば、使うスキルはエージェントが選びます。
+
+| 1 計画 | 2 見直し | 3 測定 | 4 進捗 | 5 試算 |
+|:---:|:---:|:---:|:---:|:---:|
+| 成功基準と、それぞれの測り方 | テーブルとクエリの設計の点検 | サイジング統計と負荷試験の比較 | 日次のメモと週次のまとめ | 本番の費用と共有用のレポート |
+
+<details>
+<summary><b>段階ごとのスキル</b></summary>
+
+| 段階 | スキル | 役割 |
+|---|---|---|
+| 計画 | `poc-plan-builder` | ワークロードを聞き、成功基準の案を測り方と公開資料の出典つきで出し、PoC 計画を Markdown で書き出す。合格ラインは利用者が決める |
+| 見直し | `poc-schema-query-advisor` | テーブル設計、クエリの型、投入の形を見て、改善の候補を最大 5 件、根拠のルールかドキュメントと確かめ方つきで出す |
+| 測定 | `poc-sizing-stats` | サイジング用の統計（保存量、圧縮率、投入の量とピーク、クエリの量、1 回あたりの重さ）を集め、要約と CSV にする |
+| 測定 | `poc-load-test-review` | 負荷試験の時間帯について、レイテンシの内訳、レプリカの CPU が足りていたか、読んだ行数と返した行数の差、オートスケールを見る。変更の前後の 2 回の試験も比べる |
+| 進捗 | `poc-daily-progress` | 日次のメモ。直近 24 時間の変化、成功基準ごとの状況、変化への助言、次にやることと、計画に貼る結果の行を出す |
+| 進捗 | `poc-summary` | 週次または最終のまとめ。成功基準ごとの結果と根拠、推移、残るリスク、次の作業を、判断する人向けに書く |
+| 試算 | `poc-cost-projection` | 利用者が決めた本番の前提から、PoC の請求と公開の価格表の 2 通りで月額を定価ベースで試算し、式と単価をすべて示す。見積もりではない |
+| 試算 | `poc-share-report` | 見つけたこと、集計した数値、使ったチェック、確認したいことを、ClickHouse のソリューションアーキテクト（SA）に送れるレポートにする。利用者のテーブルのデータは入れず、名前はラベルに置き換える |
+
+公開スキル [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills)（Apache-2.0）の 2 つを、変更せずに使います。`clickhouse-best-practices`（ClickHouse Agents に組み込み）と `clickhouse-architecture-advisor` です。
+
+</details>
+
+## 仕組み
+
+エージェントは Remote MCP（Model Context Protocol）でサービスに問い合わせ、ドキュメントを引用します。
+
+```mermaid
+flowchart LR
+    U["利用者<br/>計画ファイル、指摘、費用の試算、<br/>共有用レポートを受け取る"]
+    subgraph AG["ClickHouse Agents"]
+        A["PoC Assistant<br/>スキル：計画、見直し、測定、<br/>進捗、試算"]
+    end
+    SVC["対象のサービス<br/>system テーブル。利用者のテーブルは<br/>了承を得たときだけ"]
+    D["ClickHouse のドキュメント<br/>挙動を述べるときに引用"]
+    C["Cloud のツール（任意）<br/>費用、バックアップ、ClickPipes"]
+    U -- "依頼" --> A
+    A -- "Remote MCP" --> SVC
+    A -- "ドキュメント検索" --> D
+    A -. "Cloud の remote MCP" .-> C
 ```
 
-スキルの zip には、`SKILL.md`、ライセンス、そこに名前が書かれたファイル（`queries/...sql`、`reference/...md`）だけが入ります。同梱した参照ファイルが名前を挙げた参照ファイルも入ります。
-エージェントはフォルダーの中身を一覧できないので、スキルが使うファイルはすべて `SKILL.md` に書きます。
-書かれたファイルが無いと、ビルドは失敗します。
+Cloud のツールは任意です。使う場合は、[docs/setup.ja.md の 4](docs/setup.ja.md#4-エージェントを作る) のとおり、ClickHouse Cloud の remote MCP サーバーを ClickHouse Agents に追加します。追加しない場合、費用、バックアップ、ClickPipes については、エージェントが Cloud コンソールを案内します。
 
-## クエリの決まり
+## 得られるもの
 
-- 読むのは system テーブルだけです（スキルがユーザーの了承を得てユーザーのテーブルに流すクエリは、ここには置かず会話の中で書きます。そのクエリには `log_comment = 'poc-assistant'` を付け、ここにある `query_log` のクエリはすべてそれを除きます）。
-- ClickHouse Cloud ではログがレプリカごとにあるので、`clusterAllReplicas('default', merge('system', '^<table>'))` で読みます。
-- `query_log` からは、この接続自身による system テーブルの読み取り（`currentUser()` のクエリのうち、`tables` が空でなく、`system.*`、`information_schema.*`、`clusterAllReplicas`、`merge` だけのもの。開始前に失敗したクエリは `tables` が空なので残す）と、ClickHouse Cloud の監視用の DB ユーザー（名前が `-internal` で終わるもの）を除きます。除かないと、検証では SELECT の件数の大半が監視のクエリでした。接続している DB ユーザーのほかのクエリは残すので、負荷を同じ DB ユーザーで流しても数えられます。エージェントが `log_comment = 'poc-assistant'` を付けてユーザーのテーブルに流したクエリは除き、それ以外にその接続でユーザーのテーブルに流したクエリは数えられます。
-- 必要なパーティションだけを読むよう、`event_time` に加えて `event_date` でも絞ります。
-- ユーザー名は出さず、数だけを出します。`normalized_query_hash` は桁が落ちないよう `toString` で文字列にします。
-- 期間は `30 /*days*/`、負荷試験の時間帯は `now() - INTERVAL 1 HOUR /*window_start*/` と `now() /*window_end*/` と書きます。ツールがこれらの印を置き換えます。
-- compact parts だけで保存されている小さなテーブルは、マージされるまで圧縮後の容量が 0 と出ます。
-- アドバイザー、負荷試験の振り返り、日次のまとめのスキルは、見つけたことを確かめるために、system テーブルを読むクエリを同じ絞り込みで自分で書いて実行できます。書いたクエリは、自分で書いたものとして出力に示します。サイジングのスキルは、数字を再現できるよう、渡したクエリだけを実行します。
+回答には、数値と、根拠にしたクエリやドキュメントが付きます。
+
+<table>
+  <tr>
+    <th width="33%">設計の指摘</th>
+    <th width="33%">負荷試験の振り返り</th>
+    <th width="33%">費用の試算</th>
+  </tr>
+  <tr>
+    <td><a href="docs/images/ja/2-finding-join.png"><img src="docs/images/ja/2-finding-join.png" alt="根拠つきの設計の指摘"></a></td>
+    <td><a href="docs/images/ja/3-loadtest-compare.png"><img src="docs/images/ja/3-loadtest-compare.png" alt="成功基準に照らした p95"></a></td>
+    <td><a href="docs/images/ja/5-cost-table.png"><img src="docs/images/ja/5-cost-table.png" alt="価格表からの試算"></a></td>
+  </tr>
+  <tr>
+    <td>JOIN の組み立て側が大きい点と、確かめる変更案</td>
+    <td>2 回の試験を成功基準に照らして比較</td>
+    <td>価格表から月額を試算し、式をすべて示す</td>
+  </tr>
+</table>
+
+> [!TIP]
+> 合成データの PoC を 1 件、計画から共有レポートまで段ごとに追った例は、[通しの手順](docs/walkthrough.ja.md)にあります。
+
+## 回答の決まり
+
+| 決まり | 内容 |
+|---|---|
+| 🔎 **推測でなく根拠** | 数値は system テーブルから取り、ClickHouse の挙動については公式ドキュメントを引用します。 |
+| 🔐 **利用者のテーブルは了承を得てから** | 利用者のテーブルに問い合わせる前に、クエリを `EXPLAIN ESTIMATE` の見積もりとともに示して了承を求めます。返すのは行ではなく集計値です。 |
+| 🚫 **規模・ティア・金額は推奨しない** | 費用の試算は利用者の前提によるもので、見積もりではありません。 |
+| 🤖 **生成 AI 機能の利用条件** | 問い合わせの結果は、組織が Generative AI features を有効にするときに同意する利用条件のもとで、モデルが処理します。 |
+| 📤 **共有するものは利用者が決める** | 共有用レポートはテーブルのデータと名前を除いて書きます。利用者が確かめて、自分で送ります。 |
+
+## 始め方
+
+1. **サービスの準備**：サービスで Remote MCP と Generative AI features を有効にします。
+2. **エージェントの作成**：[最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)からスキルの zip 9 個を上げ、エージェントを作ります。
+3. **計画を頼む**：できた計画ファイルをエージェントに添付します。
+
+詳しい手順：**[docs/setup.ja.md](docs/setup.ja.md)**
 
 ## 確認の状況
 
@@ -76,3 +116,7 @@ scripts/test-queries.sh         # PATH に clickhouse のバイナリが必要
 - ClickHouse 26.7 と 26.8 で、最小権限の DB ユーザーとして全クエリが通ります（`scripts/test-queries.sh`、CI で実行）。ClickHouse Cloud（26.6）の検証用サービスでも、全クエリがエラーなく動きます。
 - 使っていないもの：ClickHouse Agents のメモリ（手で作ったメモリが検証では会話に渡らなかった）、定期実行（ClickHouse のツールを付けたエージェントで予定を作ると、MCP の再接続を求められ続けた）、Agent API（使えない）。日次のまとめと週次の総点検は、エージェントに頼んで実行します。
 - 変更点と各変更の確かめ方は [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases)、既知の問題と予定は [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues) にあります。
+
+## 開発者向け
+
+リポジトリの構成、zip の作り方と試験、クエリの決まりは [docs/development.ja.md](docs/development.ja.md) にあります。

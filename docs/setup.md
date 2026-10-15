@@ -46,7 +46,7 @@ Or get all nine at once as [poc-assistant-skills.zip](https://github.com/tkykenm
 gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
 ```
 
-`clickhouse-best-practices` is built into ClickHouse Agents and needs no download. `ch-sizing-export.zip` in the release is the export kit for users who run the queries themselves; the agent does not need it. To build the zips from source instead, see [Build](../README.md#build).
+`clickhouse-best-practices` is built into ClickHouse Agents and needs no download. `ch-sizing-export.zip` in the release is the export kit for users who run the queries themselves; the agent does not need it. To build the zips from source instead, see [Build in docs/development.md](development.md#build).
 
 ## 3. Upload the skills
 

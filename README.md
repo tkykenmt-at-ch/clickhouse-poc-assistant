@@ -1,68 +1,114 @@
-# clickhouse-poc-assistant
+<div align="center">
 
-[日本語](README.ja.md)
+# PoC Assistant
 
-Tools that help run a ClickHouse Cloud proof of concept (PoC). The work is split into skills, and one agent in [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents) ("PoC assistant") picks the right skill for each request. Everything reads **system tables**. For sizing and autoscaling, the skills also read the service's configured memory range and replica count from the ClickHouse tool in ClickHouse Agents (`get_services_list`). The advisor, load-test and daily skills query the user's own tables only to confirm a finding, after the user approves the queries, and return aggregates rather than rows; the sizing skill and the export kit never do.
+**powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
 
-| Skill | What it does |
-|---|---|
-| `poc-plan-builder` | Interviews the user about the workload, proposes success criteria with a measurement method and a public source for each, and writes the PoC plan as Markdown. Pass thresholds are left to the user. |
-| `poc-sizing-stats` | Collects sizing statistics (storage, compression, ingest volume and peaks, query load, per-query cost) and writes a summary plus CSV-ready tables. |
-| `poc-schema-query-advisor` | Reviews table design, query patterns and insert shape, and proposes up to five improvement candidates with the rule or documentation page behind each and a way to verify it. |
-| `poc-load-test-review` | Reviews one load test window: where latency went (CPU, waiting for CPU, I/O), whether the replicas ran out of CPU, rows read against rows returned, and why autoscaling did or did not react, with the documentation behind each point. Also compares two runs before and after a change. |
-| `poc-daily-progress` | Daily note: what changed in the last 24 hours, where each success criterion stands, advice limited to tables and queries that changed (at most three items), and next actions. Reads the PoC plan attached to the agent and outputs result lines to paste into the plan's `## Results`. |
-| `poc-summary` | Weekly or final PoC summary for the people who decide: each criterion over the whole PoC with its evidence and weekly trend, what changed, open risks and next steps. Uses system tables and the plan's `## Results` for weeks older than 30 days. |
-| `poc-cost-projection` | Monthly list-price projection of a production service from the user's assumptions, two ways: the PoC's own bill scaled up, and the public price list (https://clickhouse.com/pricing.md, or its daily copy). Shows every formula, rate and its date; not a quote. |
-| `poc-share-report` | Report the user can send to their ClickHouse SA: findings, aggregate numbers, checks and questions from the conversation, with no data from the user's tables and names replaced by labels. A one-line note that the assistant can make mistakes and findings should be checked with the SA appears once per conversation and at the end of decision outputs (summary, cost projection, share report). |
+Run a ClickHouse Cloud proof of concept with evidence, not guesses.<br>
+The agent reads your service's system tables and the official documentation,<br>and answers with the numbers and the sources behind them.
+
+[![Release](https://img.shields.io/github/v/release/tkykenmt-at-ch/clickhouse-poc-assistant?label=release)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
+
+[Get started](#get-started) · [Walkthrough](docs/walkthrough.md) · [Setup guide](docs/setup.md) · [日本語](README.ja.md)
+
+<img src="docs/images/en/1-request.png" alt="A request in plain words, and the skill the agent picked" width="760">
+
+</div>
+
+> [!NOTE]
+> This is an open-source project (Apache-2.0), not a supported ClickHouse product.
+
+## Where it helps
+
+One skill for each stage of a PoC. Ask in your own words; the agent picks the skill.
+
+| 1&nbsp;·&nbsp;Plan | 2&nbsp;·&nbsp;Review | 3&nbsp;·&nbsp;Measure | 4&nbsp;·&nbsp;Track | 5&nbsp;·&nbsp;Project |
+|:---:|:---:|:---:|:---:|:---:|
+| Success criteria and how to measure each | Table and query design against best practices | Sizing statistics and load-test comparisons | Daily notes and weekly summaries | Production cost and a report to share |
+
+<details>
+<summary><b>The skills behind each stage</b></summary>
+
+| Stage | Skill | What it does |
+|---|---|---|
+| Plan | `poc-plan-builder` | Asks about the workload, proposes success criteria with a measurement method and a public source for each, and writes the PoC plan as Markdown. Pass thresholds are left to you. |
+| Review | `poc-schema-query-advisor` | Reviews table design, query patterns and insert shape, and proposes up to five improvement candidates, each with the rule or documentation page behind it and a way to verify it. |
+| Measure | `poc-sizing-stats` | Collects sizing statistics (storage, compression, ingest volume and peaks, query load, per-query cost) as a summary and CSV-ready tables. |
+| Measure | `poc-load-test-review` | Reviews one load-test window (where latency went, whether the replicas ran out of CPU, rows read against rows returned, autoscaling), or compares two runs before and after a change. |
+| Track | `poc-daily-progress` | Daily note: what changed in the last 24 hours, where each success criterion stands, advice on what changed, and next actions, with result lines for the plan. |
+| Track | `poc-summary` | Weekly or final summary for the people who decide: each criterion with its evidence and trend, open risks and next steps. |
+| Project | `poc-cost-projection` | Monthly list-price projection of a production service from your assumptions, from the PoC's bill and from the public price list, with every formula and rate. Not a quote. |
+| Project | `poc-share-report` | A report you can send to your ClickHouse Solutions Architect (SA): findings, aggregate numbers, checks and questions, with no data from your tables and names replaced by labels. |
 
 Two public skills from [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills) (Apache-2.0) are used unmodified: `clickhouse-best-practices` (built into ClickHouse Agents) and `clickhouse-architecture-advisor`.
 
-**To install:** download the zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and follow [docs/setup.md](docs/setup.md). To see what each step returns, read the [walkthrough](docs/walkthrough.md): one PoC on synthetic data, from plan to share report, with screenshots.
+</details>
 
-## Repository layout
+## How it works
 
-| Path | Contents |
-|---|---|
-| `queries/` | Sizing queries (01–08). The single source for every tool below. |
-| `queries/optional/` | A query that includes sample query text. Not run by default. |
-| `queries/advisor/` | Queries for the advisor (10–13). |
-| `queries/progress/` | Queries for the daily note (20–28; 22 onwards pick up changes, 26–28 cover errors, background work and async insert flushes). |
-| `queries/loadtest/` | Queries for one load-test window (30–31) and for comparing two runs (32). |
-| `reference/poc-criteria.md` | PoC evaluation areas and how to measure each, with public sources only (ClickHouse docs and customer stories on clickhouse.com/blog). |
-| `reference/checks-*.md` | Checks for a running service, one file per area (CPU and concurrency, reads and queries, inserts and parts, errors and background work, autoscaling and test design, the Cloud service). Each check names the columns it reads, the rule and its public source. The bundled design rules (`clickhouse-best-practices`) cover how to build tables and inserts; these cover what to look at once a workload runs. |
-| `clickhouse-agents/skills/` | The skills (`SKILL.md` per skill). |
-| `export/` | A kit for users who export the statistics themselves with `export.sh` (bash and curl) or the SQL console. |
-| `scripts/build.sh` | Builds the skill zips and the export kit into `dist/`. |
-| `scripts/fetch-public-skills.sh` | Downloads public skills unmodified at a pinned commit and zips them into `dist/`, with their license. |
-| `scripts/bundle.sh` | Bundles all skill zips into `dist/poc-assistant-skills.zip`. |
-| `scripts/test-queries.sh` | Runs every query on a throwaway local ClickHouse server as a least-privilege user. |
-| `.github/workflows/build.yml` | CI and releases (see below). |
-| `docs/` | Setup guide and walkthrough (`docs/images/` holds its screenshots). |
-| `LICENSE` | Apache-2.0. Every zip carries a copy; the public skill zip carries the ClickHouse/agent-skills license. |
+The agent queries your service over Remote MCP (Model Context Protocol) and cites the documentation.
 
-## Build
-
-GitHub Actions runs on every push and pull request: it checks the SQL syntax, runs every query on a throwaway server (`scripts/test-queries.sh`), runs ShellCheck, and builds the zips. Pushing a `v*` tag publishes them to a release. To build locally:
-
-```bash
-scripts/build.sh                # dist/ch-sizing-export.zip and dist/<skill>-skill.zip
-scripts/fetch-public-skills.sh  # dist/clickhouse-architecture-advisor-skill.zip
-scripts/bundle.sh               # dist/poc-assistant-skills.zip
-scripts/test-queries.sh         # needs a clickhouse binary on PATH
+```mermaid
+flowchart LR
+    U["You<br/>receive a plan file, findings,<br/>a cost projection and a share report"]
+    subgraph AG["ClickHouse Agents"]
+        A["PoC Assistant<br/>skills: plan, review, measure,<br/>track, project"]
+    end
+    SVC["Your service<br/>system tables, and your own tables<br/>only with approval"]
+    D["ClickHouse documentation<br/>cited for how ClickHouse behaves"]
+    C["Cloud tools (optional)<br/>cost, backups, ClickPipes"]
+    U -- "request" --> A
+    A -- "Remote MCP" --> SVC
+    A -- "docs search" --> D
+    A -. "Cloud remote MCP" .-> C
 ```
 
-Each skill zip contains its `SKILL.md`, the license, and exactly the files the skill names (`queries/...sql`, `reference/...md`). The agent cannot list folders, so every file a skill uses is named in its `SKILL.md`; the build fails if a named file is missing. Reference files that a shipped reference file names are shipped too.
+The Cloud tools are optional: add the ClickHouse Cloud remote MCP server to ClickHouse Agents as [docs/setup.md](docs/setup.md#4-create-the-agent) describes. Without it, the agent points to the Cloud console for cost, backups and ClickPipes.
 
-## Query conventions
+## What you get
 
-- Read system tables only. (Queries that the skills run on user tables with the user's approval are written in the conversation, not stored here; they carry `log_comment = 'poc-assistant'`, and every `query_log` query here leaves them out.)
-- On ClickHouse Cloud, logs are per replica: read them with `clusterAllReplicas('default', merge('system', '^<table>'))`.
-- From `query_log`, exclude this connection's own reads of system tables (queries by `currentUser()` whose `tables` are not empty and are only `system.*`, `information_schema.*`, `clusterAllReplicas` and `merge`; queries that failed before they started have no `tables` and are kept) and ClickHouse Cloud's own monitoring users (names ending in `-internal`). Without this, monitoring queries dominated the SELECT counts in testing. Other queries of the connected user are kept, so a workload that runs as the same database user is still counted; queries that the agent runs on user tables with `log_comment = 'poc-assistant'` are left out, and any other query on user tables over that connection is counted.
-- Filter on `event_date` as well as `event_time` so only the needed partitions are read.
-- Do not output user names; output counts. Output `normalized_query_hash` as a string (`toString`) so no digits are lost.
-- Write the period as `30 /*days*/`, and a load-test window as `now() - INTERVAL 1 HOUR /*window_start*/` and `now() /*window_end*/`; tools replace these markers.
-- Small tables stored only in compact parts report 0 compressed bytes until they are merged.
-- The advisor, load-test and daily skills may write further read-only queries on system tables to confirm a finding, with the same filters, and show them as their own in the output. The sizing skill runs only the listed queries, so its numbers can be reproduced.
+Every answer shows the numbers and the query or documentation page behind them.
+
+<table>
+  <tr>
+    <th width="33%">Design findings</th>
+    <th width="33%">Load-test review</th>
+    <th width="33%">Cost projection</th>
+  </tr>
+  <tr>
+    <td><a href="docs/images/en/2-finding-join.png"><img src="docs/images/en/2-finding-join.png" alt="A design finding with its evidence and sources"></a></td>
+    <td><a href="docs/images/en/3-loadtest-compare.png"><img src="docs/images/en/3-loadtest-compare.png" alt="p95 per query against a success criterion"></a></td>
+    <td><a href="docs/images/en/5-cost-table.png"><img src="docs/images/en/5-cost-table.png" alt="Cost projection from the price list"></a></td>
+  </tr>
+  <tr>
+    <td>A large JOIN build side, with a change to test</td>
+    <td>Two runs compared against a success criterion</td>
+    <td>Monthly cost from the price list, with every formula</td>
+  </tr>
+</table>
+
+> [!TIP]
+> The [walkthrough](docs/walkthrough.md) follows one PoC on synthetic data through every step, from the plan to the share report.
+
+## Guardrails
+
+| Guardrail | What it means |
+|---|---|
+| 🔎 **Evidence, not guesses** | Numbers come from system tables; statements about how ClickHouse behaves cite the official documentation. |
+| 🔐 **Your tables only with approval** | Before it queries your own tables, the agent shows the queries with their `EXPLAIN ESTIMATE` and asks. It returns aggregates, not rows. |
+| 🚫 **No size, tier or price advice** | A cost projection uses your assumptions and is not a quote. |
+| 🤖 **Generative AI terms** | Query results are processed by the model under the Generative AI features terms your organization accepts when it turns the features on. |
+| 📤 **You decide what is shared** | The share report leaves out table data and names; you check it and send it yourself. |
+
+## Get started
+
+1. **Prepare the service**: turn on Remote MCP and Generative AI features on the service.
+2. **Create the agent**: upload the nine skill zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and create the agent.
+3. **Ask for a plan**: and attach the plan file to the agent.
+
+Step by step: **[docs/setup.md](docs/setup.md)**
 
 ## Status
 
@@ -70,3 +116,7 @@ Each skill zip contains its `SKILL.md`, the license, and exactly the files the s
 - All queries pass on ClickHouse 26.7 and 26.8 as a least-privilege user (`scripts/test-queries.sh`, run by CI), and run without errors on a ClickHouse Cloud (26.6) test service.
 - Not used: ClickHouse Agents memory (manually created memories did not reach the agent in testing), scheduled chats (creating a schedule for an agent with the ClickHouse tool kept asking to reconnect the MCP server), and the Agent API (not available). Ask the agent for the daily note and the weekly review.
 - What changed and how each change was tested: [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues).
+
+## Development
+
+Repository layout, how to build and test the zips, and the conventions every query follows: [docs/development.md](docs/development.md).
