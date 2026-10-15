@@ -26,7 +26,7 @@ If the file, `## Target` or `## Success criteria` is missing, say which, and sto
 - System tables keep about 30 days, and on a new or replaced service they can start later than the PoC. Before measuring, find where the logs start (`min(event_time)` of `query_log` and of `part_log`, read with `clusterAllReplicas`). Days before that are "no data", not zero: fill them from `## Results` if it has them, say so, and never count them as failing a criterion.
 - The pass or fail of the PoC is the user's decision. Report each criterion as met, not met or not measured against its pass threshold, and the purpose as a question the results answer or do not answer; do not declare the PoC passed.
 - Do not recommend a service size, a tier or a price. For sizing inputs, point to the `poc-sizing-stats` skill.
-- Before the first query, ask whether a load test or another measured run is going on now. If it is, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
+- Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. If a run is going on, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
 - Reading system tables wakes an idled service and keeps it awake. Read `reference/checks-cloud-service.md` for this and for services in a warehouse.
 - The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - To confirm a finding, you may write further read-only queries on system tables. Filter on `event_date` and a time range, add `LIMIT`, and do not read message text such as `exception` or `query` beyond what the listed queries already return. Show each query you wrote in the evidence section and mark it as yours.
@@ -43,7 +43,7 @@ If the file, `## Target` or `## Success criteria` is missing, say which, and sto
 - When you state how ClickHouse behaves (not a number from a query), cite a URL from the `reference/` files or confirm it with the documentation search tool and attach the URL. The URLs in the `reference/` files have been checked; cite them as they are.
 - Times in query results are in the server's time zone; label them.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
-- Answer in the user's language (Japanese if the user writes in Japanese).
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 
 ## Steps
 

@@ -17,7 +17,7 @@ Tools that help run a ClickHouse Cloud proof of concept (PoC). The work is split
 
 Two public skills from [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills) (Apache-2.0) are used unmodified: `clickhouse-best-practices` (built into ClickHouse Agents) and `clickhouse-architecture-advisor`.
 
-**To install:** download the zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and follow [docs/setup.md](docs/setup.md).
+**To install:** download the zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and follow [docs/setup.md](docs/setup.md). To see what each step returns, read the [walkthrough](docs/walkthrough.md): one PoC on synthetic data, from plan to share report, with screenshots.
 
 ## Repository layout
 
@@ -37,7 +37,7 @@ Two public skills from [ClickHouse/agent-skills](https://github.com/ClickHouse/a
 | `scripts/bundle.sh` | Bundles all skill zips into `dist/poc-assistant-skills.zip`. |
 | `scripts/test-queries.sh` | Runs every query on a throwaway local ClickHouse server as a least-privilege user. |
 | `.github/workflows/build.yml` | CI and releases (see below). |
-| `docs/` | Setup guide. |
+| `docs/` | Setup guide and walkthrough (`docs/images/` holds its screenshots). |
 | `LICENSE` | Apache-2.0. Every zip carries a copy; the public skill zip carries the ClickHouse/agent-skills license. |
 
 ## Build
@@ -66,6 +66,7 @@ Each skill zip contains its `SKILL.md`, the license, and exactly the files the s
 
 ## Status
 
+- The whole flow, from plan to share report, was run in ClickHouse Agents in English and Japanese on a test service with synthetic data (2026-10-15); see the [walkthrough](docs/walkthrough.md).
 - All queries pass on ClickHouse 26.7 and 26.8 as a least-privilege user (`scripts/test-queries.sh`, run by CI), and run without errors on a ClickHouse Cloud (26.6) test service.
 - Not used: ClickHouse Agents memory (manually created memories did not reach the agent in testing), scheduled chats (creating a schedule for an agent with the ClickHouse tool kept asking to reconnect the MCP server), and the Agent API (not available). Ask the agent for the daily note and the weekly review.
 - What changed and how each change was tested: [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues).

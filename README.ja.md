@@ -21,6 +21,7 @@ ClickHouse Cloud の PoC（概念実証）を手伝うツールをまとめた�
 `clickhouse-best-practices`（ClickHouse Agents に組み込み）と `clickhouse-architecture-advisor` です。
 
 **導入：** [最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)から zip をダウンロードし、[docs/setup.ja.md](docs/setup.ja.md) の手順に従います。
+各段で何が返るかは、[通しの手順](docs/walkthrough.ja.md)で見られます。合成データの PoC を 1 件、計画から共有レポートまで画面つきで追います。
 
 ## 構成
 
@@ -40,7 +41,7 @@ ClickHouse Cloud の PoC（概念実証）を手伝うツールをまとめた�
 | `scripts/bundle.sh` | スキルの zip をまとめて `dist/poc-assistant-skills.zip` にする |
 | `scripts/test-queries.sh` | 使い捨てのローカルの ClickHouse サーバーで、最小権限の DB ユーザーとして全クエリを実行する |
 | `.github/workflows/build.yml` | CI とリリース（下記） |
-| `docs/` | 導入の手順 |
+| `docs/` | 導入の手順と通しの手順（画面は `docs/images/`） |
 | `LICENSE` | Apache-2.0。どの zip にも写しを入れる。公開スキルの zip には ClickHouse/agent-skills のライセンスを入れる |
 
 ## 作り方
@@ -71,6 +72,7 @@ scripts/test-queries.sh         # PATH に clickhouse のバイナリが必要
 
 ## 確認の状況
 
+- 計画から共有レポートまでの流れを、合成データの検証用サービスで、ClickHouse Agents の英語と日本語の両方で通しました（2026-10-15）。[通しの手順](docs/walkthrough.ja.md)を参照してください。
 - ClickHouse 26.7 と 26.8 で、最小権限の DB ユーザーとして全クエリが通ります（`scripts/test-queries.sh`、CI で実行）。ClickHouse Cloud（26.6）の検証用サービスでも、全クエリがエラーなく動きます。
 - 使っていないもの：ClickHouse Agents のメモリ（手で作ったメモリが検証では会話に渡らなかった）、定期実行（ClickHouse のツールを付けたエージェントで予定を作ると、MCP の再接続を求められ続けた）、Agent API（使えない）。日次のまとめと週次の総点検は、エージェントに頼んで実行します。
 - 変更点と各変更の確かめ方は [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases)、既知の問題と予定は [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues) にあります。

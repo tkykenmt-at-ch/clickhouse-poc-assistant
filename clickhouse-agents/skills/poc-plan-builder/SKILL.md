@@ -17,7 +17,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 - Give each criterion a scope that the daily note can query the same way every day: the `log_comment` tags, tables or query types it covers. Suggest tagging test traffic with `log_comment` so latency criteria can be measured per tag.
 - Do not recommend a service size, a tier or a price.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
-- Answer in the user's language (Japanese if the user writes in Japanese).
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. The plan file is the exception: keep `Measured by:` and `Scope:` in it as the paragraph after the plan template in step 4 says, because the other skills read them. In your chat answers, write who measures each criterion in the user's language (in Japanese, for example 「system テーブル（日次メモが毎日測る）」「ユーザーのテーブル（承認後に集計）」「Cloud のツール」「ユーザー」).
 
 ## Steps
 

@@ -15,11 +15,11 @@ You project what a production service would cost per month at list price, from w
 - The result is a list-price projection, not a quote. Say so at the top, with the date of the rates, and point to the calculator on https://clickhouse.com/pricing for a quotable figure.
 - Do not recommend a size, a tier or a price. The production assumptions are the user's; for measured sizing inputs, point to the `poc-sizing-stats` skill.
 - Every number comes from a query or tool result in this conversation, from the price list fetched in this conversation, or from the user. Label each with where it came from. If a query or tool fails, say which and why; do not fill the gap.
-- Before the first query, ask whether a load test or another measured run is going on now. If it is, wait until it ends.
+- Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. If a run is going on, wait until it ends.
 - Reading system tables wakes an idled service and keeps it awake. Read `reference/checks-cloud-service.md` for this, for services in a warehouse and for the Cloud tools.
 - Do not output user names or e-mail addresses, and do not output endpoints, the IP access list, the IAM role or ClickPipes source details.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
-- Answer in the user's language (Japanese if the user writes in Japanese).
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 
 ## Steps
 

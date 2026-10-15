@@ -24,6 +24,10 @@ Remote MCP はサービスごとに有効にします。
 
 参考：https://clickhouse.com/docs/products/cloud/features/ai-ml/remote-mcp
 
+2026-10-15 の試験では、新しいサービスで、エージェントのクエリが「Generative AI features are not enabled for service …」で失敗しました。
+サービスの **Settings** で **Enable Generative AI features** をオンにすると通りました。
+オンにするときは、組織の管理者が、組織を代表して AI 機能の利用条件に同意します。
+
 ## 2. スキルをダウンロードする
 
 最新のリリースから 1 つずつダウンロードします。
@@ -120,6 +124,8 @@ You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for e
 | 「今日わかったことを、担当 SA に送る共有用レポートにしてください」 | `poc-share-report` |
 
 日次のまとめは毎朝（出てくる結果の行は計画の `## 結果` に貼ります）、総点検と `poc-summary` は週に 1 回、最後にもう一度 `poc-summary` を目安にします。
+
+画面つきで 1 件の PoC を最後まで追った例は、[通しの手順](walkthrough.ja.md)にあります。
 
 ## 新しいリリースへの入れ替え
 

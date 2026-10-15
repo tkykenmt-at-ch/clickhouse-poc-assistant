@@ -15,6 +15,8 @@ SELECT
     round(avg(ProfileEvents['SelectedMarksTotal'])) AS avg_total_marks,
     round(avg(ProfileEvents['SelectedMarks']) / nullIf(avg(ProfileEvents['SelectedMarksTotal']), 0), 3) AS marks_read_ratio,
     max(memory_usage) AS max_memory_bytes,
+    round(avg(ProfileEvents['JoinBuildTableRowCount'])) AS avg_join_build_rows,
+    round(avg(ProfileEvents['JoinProbeTableRowCount'])) AS avg_join_probe_rows,
     countIf(ProfileEvents['ExternalAggregationWritePart'] > 0) AS spilled_group_by_executions,
     countIf(ProfileEvents['ExternalJoinWritePart'] > 0 OR ProfileEvents['JoinSpillingHashJoinSwitchedToGraceJoin'] > 0) AS spilled_join_executions,
     countIf(Settings['enable_analyzer'] = '0' OR Settings['allow_experimental_analyzer'] = '0') AS old_analyzer_executions,

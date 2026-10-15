@@ -16,7 +16,7 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
 - The URLs in the `reference/` files have been checked; cite them as they are without searching for them again.
 - Present recommendations as candidates to verify, not as decisions. Do not promise a speed-up or saving; say what to measure instead.
 - Do not recommend a service size, a tier or a price.
-- Before the first query, ask whether a load test or another measured run is going on now. If it is, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
+- Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. If a run is going on, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
 - Reading system tables wakes an idled service and keeps it awake, and system tables keep about 30 days. Read `reference/checks-cloud-service.md` for these and for services in a warehouse.
 - The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - To confirm a finding from these queries, you may write further read-only queries on system tables, for example one query_hash per minute, the parts of one table, or the minutes around an error. Filter on `event_date` and a time range, add `LIMIT`, and do not read message text such as `exception` or `query` beyond what the listed queries already return. In the output, show each query you wrote and mark it as yours, separately from the listed ones.
@@ -33,7 +33,7 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
 - Tables stored only in compact parts (small or just written) report 0 compressed bytes and a NULL compression ratio; say so instead of reporting a ratio.
 - `sample_query` is the query text with literal values replaced by `?` (`normalizeQuery`). Quote column names, JSON keys and functions from it when they matter.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
-- Answer in the user's language (Japanese if the user writes in Japanese).
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 
 ## Steps
 
@@ -51,7 +51,7 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
    - When the question is about choosing a pattern for the workload (ingestion path, pre-aggregation, denormalization, materialized views), use the `clickhouse-architecture-advisor` skill and keep its provenance labels.
    - For a fact about ClickHouse behaviour that neither the public skills nor the files below cover, confirm it with the documentation search tool and attach the URL.
    - Read these files (the paths are exact) and apply each check whose columns are in your results; they cover running-service signals that the design rules do not:
-     - `reference/checks-reads-and-queries.md`: rows read against rows returned and the sorting key, spilled GROUP BY and JOIN, exact distinct counts, FINAL, columns read, cached results, projections, skipping-index cost, the old analyzer, ORDER BY ... LIMIT, CTEs, JOIN inputs, column types, rollup tables, parallel replicas, choosing the kind of change, how to verify
+     - `reference/checks-reads-and-queries.md`: rows read against rows returned and the sorting key, spilled GROUP BY and JOIN, the JOIN build side, exact distinct counts, FINAL, columns read, cached results, projections, skipping-index cost, the old analyzer, ORDER BY ... LIMIT, CTEs, JOIN inputs, column types, rollup tables, parallel replicas, choosing the kind of change, how to verify
      - `reference/checks-inserts-and-parts.md`: delayed or rejected inserts, async inserts without waiting, attached materialized views, too many parts, the partition key, inserts that touch many partitions, backfills (including `TOO_MANY_PARTS` and load-balancer timeouts on long `INSERT ... SELECT`), deletes and updates, deduplicated inserts, patch parts, the async insert flush wait, TTL that has not removed old data yet
      - `reference/checks-cloud-service.md`: idling and active parts, what stops while the service is idle, object counts against usage limits, server version changes, Kafka engine tables
      - `reference/checks-errors-and-background.md`: dictionaries that are empty or failed to load (rows from `13`)

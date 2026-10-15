@@ -22,6 +22,8 @@ The agent queries the service through the ClickHouse Remote MCP server, which mu
 
 Reference: https://clickhouse.com/docs/products/cloud/features/ai-ml/remote-mcp
 
+In testing (2026-10-15), the agent's queries on a new service also failed with "Generative AI features are not enabled for service …" until **Enable Generative AI features** was turned on in the service's **Settings**. Turning it on asks an organization admin to accept the terms for AI features on behalf of the organization.
+
 ## 2. Download the skills
 
 Download from the latest release, one by one:
@@ -108,6 +110,8 @@ The plan needs the sections `## Target` and `## Success criteria`, and optionall
 | "Write a share report for our SA about today's findings." | `poc-share-report` |
 
 Suggested rhythm: the daily note every morning (paste its result lines into the plan's `## Results`), the full review and `poc-summary` once a week, and `poc-summary` again at the end.
+
+For one PoC followed through every step with screenshots, see the [walkthrough](walkthrough.md).
 
 ## Upgrading to a new release
 

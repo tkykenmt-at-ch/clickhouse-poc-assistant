@@ -66,6 +66,12 @@ Each check names the columns it reads, the rule, and the public source of the ru
 - **Rule**: a hash join builds the right-hand side in memory; when it does not fit, a spilling algorithm is used and the join slows down. Since 24.12 the planner puts the smaller table of a two-table join on the right by itself (since 25.9 also for three or more tables), so first check the join order in `EXPLAIN`; otherwise choose the join algorithm for the sizes involved.
 - **Source**: https://clickhouse.com/docs/concepts/features/operations/select/joining-tables#choosing-a-join-algorithm
 
+## Does a JOIN build a large hash table on every run?
+
+- **Columns**: `avg_join_build_rows`, `avg_join_probe_rows`, `max_memory_bytes`, `p50_ms`, `total_cpu_seconds`, `sample_query` (`11`); `total_rows` of the joined tables (`10`).
+- **Rule**: a hash join reads its build side into an in-memory hash table on every execution, even when it does not spill. A pattern among the heaviest by CPU whose build side is millions of rows pays for that each time. Since 24.12 the planner chooses the smaller input as the build side, so the build side can be the filtered fact table rather than the table written on the right; read `avg_join_build_rows` against the tables' rows to see which side it is. When the other table is a dimension that fits in memory and the key is already in the fact table, a candidate is to look the columns up with `dictGet` on a dictionary instead of joining; another is to denormalize the looked-up columns at insert time. Compare p50, memory and CPU on a test copy; these are candidates, not decisions.
+- **Source**: https://clickhouse.com/docs/concepts/best-practices/minimize-optimize-joins , https://clickhouse.com/docs/concepts/features/dictionaries/best-practices
+
 ## Do skipping indexes pay for themselves?
 
 - **Columns**: `avg_skip_index_ms` against `p50_ms` and `marks_read_ratio` (`11`).

@@ -15,7 +15,7 @@ You turn what this conversation found into a report the user can send to their C
 - If the conversation has no findings yet, say so and suggest which skill to run first (for example `poc-schema-query-advisor` or `poc-daily-progress`).
 - Do not add findings, numbers or judgements that are not in the conversation. Keep each finding's confidence (measured, inferred, not verified) as it was stated.
 - Do not send, post or upload the report anywhere. The user sends it.
-- Answer in the user's language (Japanese if the user writes in Japanese). Write the report in the same language unless the user asks for another.
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. Write the report in the same language unless the user asks for another.
 
 ## Steps
 
