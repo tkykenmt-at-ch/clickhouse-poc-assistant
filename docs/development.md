@@ -13,7 +13,9 @@ For contributors: how the repository is laid out, how the zips are built and tes
 | `queries/advisor/` | Queries for the advisor (10–13). |
 | `queries/progress/` | Queries for the daily note (20–28; 22 onwards pick up changes, 26–28 cover errors, background work and async insert flushes). |
 | `queries/loadtest/` | Queries for one load-test window (30–31) and for comparing two runs (32). |
+| `queries/fitgap/` | Queries for checking the service against the design (40: views, materialized views and dictionaries with their sources and targets). |
 | `reference/poc-criteria.md` | PoC evaluation areas and how to measure each, with public sources only (ClickHouse docs and customer stories on clickhouse.com/blog). |
+| `reference/architecture-platform.md` | Platform decisions for the design stage (deployment, provider and region, connection paths, integrations, security, compute separation, backups): the questions, how they branch and the official pages, and the rules for the cloud providers' documentation tools. |
 | `reference/checks-*.md` | Checks for a running service, one file per area (CPU and concurrency, reads and queries, inserts and parts, errors and background work, autoscaling and test design, the Cloud service). Each check names the columns it reads, the rule and its public source. The bundled design rules (`clickhouse-best-practices`) cover how to build tables and inserts; these cover what to look at once a workload runs. |
 | `clickhouse-agents/skills/` | The skills (`SKILL.md` per skill). |
 | `export/` | A kit for users who export the statistics themselves with `export.sh` (bash and curl) or the SQL console. |
@@ -47,4 +49,4 @@ Each skill zip contains its `SKILL.md`, the license, and exactly the files the s
 - Do not output user names; output counts. Output `normalized_query_hash` as a string (`toString`) so no digits are lost.
 - Write the period as `30 /*days*/`, and a load-test window as `now() - INTERVAL 1 HOUR /*window_start*/` and `now() /*window_end*/`; tools replace these markers.
 - Small tables stored only in compact parts report 0 compressed bytes until they are merged.
-- The advisor, load-test and daily skills may write further read-only queries on system tables to confirm a finding, with the same filters, and show them as their own in the output. The sizing skill runs only the listed queries, so its numbers can be reproduced.
+- The advisor, load-test, daily and fit-gap skills may write further read-only queries on system tables to confirm a finding, with the same filters, and show them as their own in the output. The sizing skill runs only the listed queries, so its numbers can be reproduced.

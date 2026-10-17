@@ -28,6 +28,9 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
    - data: sources, daily volume, retention, whether rows are updated or deleted
    - queries: main query types, who runs them, response-time and concurrency expectations
    - the current system, if the PoC replaces one
+   - the environment: the service (new or existing), the cloud provider and region it runs in (the design stage uses
+     them, including whether to add that provider's documentation tool), whether Remote MCP and Generative AI features
+     are turned on for the service, the release channel, and how load-test traffic will be tagged with `log_comment`
 3. Pick the areas from `reference/poc-criteria.md` that match the answers. For each, propose one criterion: metric, how to measure it, who measures it, its scope, and the source URL. Ask the user for the pass threshold.
    Then go through "Test design" in `reference/poc-criteria.md` with the user and add the points that apply to the plan's `## Log` as decisions (for example the release channel and how test traffic is tagged).
 4. When the user has given pass thresholds, write the plan in exactly this format so `poc-daily-progress` can read it. Output it as a downloadable Markdown artifact named `poc-plan-<name>.md` (use the artifacts tool if it is available; otherwise a single fenced code block), and tell the user to attach that file to the agent as file context:
@@ -60,3 +63,8 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 ```
 
 Write the plan in the user's language. Keep these four headings, either in English as above or as their Japanese equivalents (`## 対象`, `## 成功基準`, `## 結果`, `## 経緯`); translate the other labels inside the sections too, but keep `Measured by:` and its values (`system tables`, `user tables, with approval`, `Cloud tools`, `user`) and `Scope:` in English, because the other skills read them literally. Tell the user that `## Results` is where the daily note's result lines and their own measurements go, so the PoC keeps its history beyond the 30 days that system tables keep.
+
+5. Add the environment answers to `## Log` as decisions (service, provider and region, release channel, tagging), and
+   list any that are not settled yet as open. Then tell the user that the next stage is the design (the
+   `poc-architecture-design` skill): it needs the source schema, a few sample rows with dummy or masked values, and
+   about five representative queries. Building the service, tables and ingest after the design is the user's work.

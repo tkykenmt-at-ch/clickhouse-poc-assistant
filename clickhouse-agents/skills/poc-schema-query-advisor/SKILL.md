@@ -37,7 +37,10 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
 
 ## Steps
 
-1. Ask for the period in days (default 30).
+1. Ask for the period in days (default 30). If a design file (a file starting with `poc-design`) is in the file
+   context, read it: for each finding below that goes against what the design chose (for example a sorting key the
+   design picked for a query you see is rare), say so and quote the design's reason, so the user can decide whether
+   the design or the table should change.
 2. Read and run these files. The paths are exact; do not guess other names. Replace `30 /*days*/` with the chosen number of days.
    - `queries/advisor/10_table_layout.sql`
    - `queries/03_columns.sql`
@@ -69,5 +72,6 @@ For each finding:
 - **Basis**: the rule name, or the documentation URL found with the documentation search tool
 - **How to verify**: a concrete check, for example `EXPLAIN indexes = 1` on the query, or creating a copy of the table with the new key in a test database and comparing `read_rows` and duration, following "How to verify a change" in `reference/checks-reads-and-queries.md`
 - **Open questions**: what needs a decision or more context before acting
+- **Design**: if a design file is attached and the finding goes against it, the design's choice and reason
 
 End with one line listing the rules you checked that found nothing.
