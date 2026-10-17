@@ -14,7 +14,9 @@
 | `queries/advisor/` | アドバイザー用の SQL（10〜13） |
 | `queries/progress/` | 日次のまとめ用の SQL（20〜28。22 以降は変化を拾い、26〜28 はエラー、バックグラウンドの処理、非同期 INSERT の書き出しを見る） |
 | `queries/loadtest/` | 負荷試験の時間帯を見る SQL（30〜31）と、2回の試験を比べる SQL（32） |
+| `queries/fitgap/` | サービスを設計と照らし合わせる SQL（40：ビュー、マテリアライズドビュー、辞書と、それぞれの読み元と書き先） |
 | `reference/poc-criteria.md` | PoC の評価の観点と測り方。出典は公開資料（ClickHouse のドキュメントと clickhouse.com/blog の事例）だけ |
+| `reference/architecture-platform.md` | 設計の段で決める基盤の層（提供の形、プロバイダとリージョン、接続経路、連携、セキュリティ、計算資源の分け方、バックアップ）。決めるための問い、条件による分かれ方、公式のページと、クラウドプロバイダのドキュメントのツールを使うときの決まり |
 | `reference/checks-*.md` | 動いているサービスを見る観点。分野ごとに 1 ファイル（CPU と同時実行、読み取りとクエリ、INSERT とパーツ、エラーとバックグラウンドの処理、オートスケールと試験の組み方、Cloud のサービス）。観点ごとに、読む列、判断の基準、公開の出典を書く。同梱の設計のルール（`clickhouse-best-practices`）はテーブルと INSERT の作り方を扱い、こちらはワークロードが動き出してから見るものを扱う |
 | `clickhouse-agents/skills/` | スキル（スキルごとの `SKILL.md`） |
 | `export/` | ユーザーが自分で統計を書き出すための一式（`export.sh`（bash と curl）か SQL コンソールで実行） |

@@ -24,16 +24,20 @@ The agent reads your service's system tables and the official documentation,<br>
 
 One skill for each stage of a PoC. Ask in your own words; the agent picks the skill.
 
-| 1&nbsp;·&nbsp;Plan | 2&nbsp;·&nbsp;Review | 3&nbsp;·&nbsp;Measure | 4&nbsp;·&nbsp;Track | 5&nbsp;·&nbsp;Project |
-|:---:|:---:|:---:|:---:|:---:|
-| Success criteria and how to measure each | Table and query design against best practices | Sizing statistics and load-test comparisons | Daily notes and weekly summaries | Production cost and a report to share |
+| 1&nbsp;·&nbsp;Plan | 2&nbsp;·&nbsp;Design | 3&nbsp;·&nbsp;Check | 4&nbsp;·&nbsp;Review | 5&nbsp;·&nbsp;Measure | 6&nbsp;·&nbsp;Track | 7&nbsp;·&nbsp;Project |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Success criteria and how to measure each | Platform, tables and ingest before you build | The service against the design, and what to do next | Table and query design against best practices | Sizing statistics and load-test comparisons | Daily notes and weekly summaries | Production cost and a report to share |
+
+You build between the design and the check: create the tables, set up ingest and load the data. The agent's connection is read-only; it writes candidates and reads what you built.
 
 <details>
 <summary><b>The skills behind each stage</b></summary>
 
 | Stage | Skill | What it does |
 |---|---|---|
-| Plan | `poc-plan-builder` | Asks about the workload, proposes success criteria with a measurement method and a public source for each, and writes the PoC plan as Markdown. Pass thresholds are left to you. |
+| Plan | `poc-plan-builder` | Asks about the workload and the environment, proposes success criteria with a measurement method and a public source for each, and writes the PoC plan as Markdown. Pass thresholds are left to you. |
+| Design | `poc-architecture-design` | Goes through the platform decisions (deployment, provider and region, connection paths, integrations, security, compute separation, backups) with the conditions and official pages for each, and writes `CREATE TABLE` candidates, objects and the ingest path from your source schema, sample rows and representative queries, with the rule behind each choice. Asks instead of inventing when an input is missing. |
+| Check | `poc-fit-gap` | Compares the service with the design during or after the build: tables and keys, column types, views and dictionaries, platform settings, ingest shape, row counts against the source, load errors and freshness. Says what matches, what differs and what is not there yet, and lists the next steps. |
 | Review | `poc-schema-query-advisor` | Reviews table design, query patterns and insert shape, and proposes up to five improvement candidates, each with the rule or documentation page behind it and a way to verify it. |
 | Measure | `poc-sizing-stats` | Collects sizing statistics (storage, compression, ingest volume and peaks, query load, per-query cost) as a summary and CSV-ready tables. |
 | Measure | `poc-load-test-review` | Reviews one load-test window (where latency went, whether the replicas ran out of CPU, rows read against rows returned, autoscaling), or compares two runs before and after a change. |
@@ -54,7 +58,7 @@ The agent queries your service over Remote MCP (Model Context Protocol) and cite
 flowchart LR
     U["You<br/>receive a plan file, findings,<br/>a cost projection and a share report"]
     subgraph AG["ClickHouse Agents"]
-        A["PoC Assistant<br/>skills: plan, review, measure,<br/>track, project"]
+        A["PoC Assistant<br/>skills: plan, design, check, review,<br/>measure, track, project"]
     end
     SVC["Your service<br/>system tables, and your own tables<br/>only with approval"]
     D["ClickHouse documentation<br/>cited for how ClickHouse behaves"]
@@ -73,17 +77,17 @@ Every answer shows the numbers and the query or documentation page behind them.
 
 <table>
   <tr>
-    <th width="33%">Design findings</th>
+    <th width="33%">Check against the design</th>
     <th width="33%">Load-test review</th>
     <th width="33%">Cost projection</th>
   </tr>
   <tr>
-    <td><a href="docs/images/en/2-finding-join.png"><img src="docs/images/en/2-finding-join.png" alt="A design finding with its evidence and sources"></a></td>
-    <td><a href="docs/images/en/3-loadtest-compare.png"><img src="docs/images/en/3-loadtest-compare.png" alt="p95 per query against a success criterion"></a></td>
-    <td><a href="docs/images/en/5-cost-table.png"><img src="docs/images/en/5-cost-table.png" alt="Cost projection from the price list"></a></td>
+    <td><a href="docs/images/en/3-fitgap-table.png"><img src="docs/images/en/3-fitgap-table.png" alt="Each item of the design against the service, with its status and source"></a></td>
+    <td><a href="docs/images/en/5-loadtest-compare.png"><img src="docs/images/en/5-loadtest-compare.png" alt="Two runs against a success criterion"></a></td>
+    <td><a href="docs/images/en/7-cost-table.png"><img src="docs/images/en/7-cost-table.png" alt="Cost projection from the price list"></a></td>
   </tr>
   <tr>
-    <td>A large JOIN build side, with a change to test</td>
+    <td>What matches, differs or is not there yet, with the missing day found</td>
     <td>Two runs compared against a success criterion</td>
     <td>Monthly cost from the price list, with every formula</td>
   </tr>
@@ -105,14 +109,14 @@ Every answer shows the numbers and the query or documentation page behind them.
 ## Get started
 
 1. **Prepare the service**: turn on Remote MCP and Generative AI features on the service.
-2. **Create the agent**: upload the nine skill zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and create the agent.
+2. **Create the agent**: upload the eleven skill zips from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and create the agent.
 3. **Ask for a plan**: and attach the plan file to the agent.
 
 Step by step: **[docs/setup.md](docs/setup.md)**
 
 ## Status
 
-- The whole flow, from plan to share report, was run in ClickHouse Agents in English and Japanese on a test service with synthetic data (2026-10-15); see the [walkthrough](docs/walkthrough.md).
+- The whole flow, from plan through design, build and check to share report, was run in ClickHouse Agents in English and Japanese on a test service with synthetic data (2026-10-17); the build was done with `clickhouse-client`, with two deliberate mistakes that the check found; see the [walkthrough](docs/walkthrough.md).
 - All queries pass on ClickHouse 26.7 and 26.8 as a least-privilege user (`scripts/test-queries.sh`, run by CI), and run without errors on a ClickHouse Cloud (26.6) test service.
 - Not used: ClickHouse Agents memory (manually created memories did not reach the agent in testing), scheduled chats (creating a schedule for an agent with the ClickHouse tool kept asking to reconnect the MCP server), and the Agent API (not available). Ask the agent for the daily note and the weekly review.
 - What changed and how each change was tested: [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues).
