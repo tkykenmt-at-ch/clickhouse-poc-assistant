@@ -87,7 +87,7 @@ Every answer shows the numbers and the query or documentation page behind them.
     <td><a href="docs/images/en/7-cost-table.png"><img src="docs/images/en/7-cost-table.png" alt="Cost projection from the price list"></a></td>
   </tr>
   <tr>
-    <td>What matches, differs or is not there yet, with the missing day found</td>
+    <td>Each design item: matches, differs or not there yet</td>
     <td>Two runs compared against a success criterion</td>
     <td>Monthly cost from the price list, with every formula</td>
   </tr>

@@ -166,7 +166,7 @@ Rules for this file:
 ## Cloud provider knowledge tools
 
 The provider's official documentation server can be added to the agent as an MCP server (optional; see
-docs/setup.md). Use it only when its tools are in this conversation:
+https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/blob/main/docs/setup.md#4-create-the-agent). Use it only when its tools are in this conversation:
 
 | Provider | Tools (as listed by the server) |
 |---|---|
@@ -181,7 +181,7 @@ docs/setup.md). Use it only when its tools are in this conversation:
 - **Rule (scope)**: use these tools only for facts on the provider's side. ClickHouse facts come from the ClickHouse
   documentation. Cite the URL of each page you used.
 - **Rule (not connected)**: if the PoC's provider has no knowledge tool in this conversation, say once that one can be
-  added (docs/setup.md, step 4); adding it is the user's choice. Then go on: for each provider-side fact you leave to
+  added (https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/blob/main/docs/setup.md#4-create-the-agent); adding it is the user's choice. Then go on: for each provider-side fact you leave to
   the user, give the provider's page for it, from the "Provider side" URLs above or from the provider's documentation
   home below, so the user knows where to check. Do not state a provider-side fact you have not read; mark it not
   verified.

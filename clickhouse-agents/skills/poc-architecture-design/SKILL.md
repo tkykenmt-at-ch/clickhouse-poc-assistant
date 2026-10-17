@@ -22,7 +22,7 @@ candidates; after the user has built, the `poc-fit-gap` skill compares the servi
 
 - Do not design from nothing. Write a `CREATE TABLE` candidate for a table only when you have its source schema (DDL,
   or column names and types) and at least one representative query that reads it. If either is missing, ask for it
-  and say what it decides (the schema decides the types; the queries decide `ORDER BY` and `PARTITION BY`). Do not
+  and say what it decides (the schema decides the types; the queries decide `ORDER BY`; retention and deletes decide `PARTITION BY`). Do not
   invent columns, volumes or queries.
 - Before the user pastes sample rows or a schema, say once: paste dummy or masked values, not real customer data;
   a few rows are enough.
@@ -40,7 +40,8 @@ candidates; after the user has built, the `poc-fit-gap` skill compares the servi
 - Sample data in object storage: you may infer a file's types with `DESCRIBE TABLE s3('<url>', '<format>')` (or `gcs`)
   only when the file is readable without credentials in the query, and only after the user approves the query. It reads
   the user's data: return the column names and types only, never values. Never ask for or accept access keys in the
-  chat; for a private bucket, ask the user to run the `DESCRIBE` themselves and paste its result.
+  chat; for a private bucket, or if the query is refused (for example `ACCESS_DENIED`, because the connection lacks the grant
+  for the `s3` table function), ask the user to run the `DESCRIBE` themselves and paste its result.
 - Do not query the user's tables. A new service usually has none; reading the service's system tables is allowed (for
   example `queries/01_service.sql` for the version, or `queries/02_tables.sql` to see what already exists).
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation,

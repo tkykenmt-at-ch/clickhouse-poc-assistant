@@ -82,6 +82,9 @@ admin "SELECT dictGetOrDefault('app.direct_dict', 'v', toUInt64(1), '') FORMAT N
 # A materialized view with a target table, for 40.
 admin "CREATE TABLE app.daily (d Date, c UInt64) ENGINE = SummingMergeTree ORDER BY d"
 admin "CREATE MATERIALIZED VIEW app.daily_mv TO app.daily AS SELECT toDate(ts) AS d, count() AS c FROM app.events GROUP BY d"
+admin "CREATE MATERIALIZED VIEW app.inner_mv ENGINE = MergeTree ORDER BY n AS SELECT n FROM app.src"
+admin "CREATE TABLE app.refresh_target (n UInt64) ENGINE = MergeTree ORDER BY n"
+admin "CREATE MATERIALIZED VIEW app.refresh_mv REFRESH EVERY 1 HOUR TO app.refresh_target AS SELECT n FROM app.src"
 admin "SYSTEM FLUSH LOGS"
 
 # The least-privilege user from export/setup_user.sql.
@@ -180,8 +183,14 @@ if ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "daily_mv" &&
   echo "FAIL 40 did not list app.daily_mv with its source and target"; failed=$((failed + 1))
 elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "empty_dict" && $3 == "Dictionary" {found=1} END {exit !found}'; then
   echo "FAIL 40 did not list the dictionary"; failed=$((failed + 1))
+elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "inner_mv" && $4 == "" && $6 == "app.src" {found=1} END {exit !found}'; then
+  echo "FAIL 40 did not list app.inner_mv with an empty target and its source"; failed=$((failed + 1))
+elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "refresh_mv" && $4 == "app.refresh_target" && $5 == "1" {found=1} END {exit !found}'; then
+  echo "FAIL 40 did not list app.refresh_mv as refreshable with its target"; failed=$((failed + 1))
+elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "daily_mv" && $7 == "" && $8 == "" {found=1} END {exit !found}'; then
+  echo "FAIL 40 gave dictionary columns to a materialized view"; failed=$((failed + 1))
 else
-  echo "ok   40 lists the materialized view with its source and target, and the dictionary"
+  echo "ok   40 lists the materialized views (TO, inner, refreshable) and the dictionary"
 fi
 
 # The least-privilege user must not be able to read user tables.

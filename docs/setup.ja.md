@@ -12,7 +12,7 @@ ClickHouse Agents（ベータ）を使える ClickHouse Cloud の組織と、評
 3. zip を 1 つずつスキルとしてアップロードする（[3](#3-スキルをアップロードする)）
 4. エージェントを作り、指示文を貼る（[4](#4-エージェントを作る)）
 5. エージェントと PoC の計画を作り、エージェントに添付する（[5](#5-poc-の計画を作って添付する)）
-6. 統計、見直し、日次のまとめを頼む（[6](#6-使う)）
+6. 設計、設計との照合、統計、見直し、日次のまとめを頼む（[6](#6-使う)）
 
 ## 1. サービスで Remote MCP を有効にする
 
@@ -97,7 +97,7 @@ You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for e
 
 初めて ClickHouse のツールを使うときに、接続を求められます。求められない場合は、左のバーの **MCP設定** で **ClickHouse** を探し、**接続** を押します。エージェントから見えるのは、Cloud のユーザーがアクセスできる組織とサービスだけです。
 
-任意の設定として、費用、tier、バックアップ、ClickPipes も読ませられます。Agents に組み込みの **ClickHouse** サーバーには、これらを読む Cloud のツール（`get_organization_cost`、`list_service_backups`、`list_clickpipes` など）がありません。エージェントに読ませるには、**MCP設定** で ClickHouse Cloud のリモート MCP サーバーを自分のサーバーとして足します（URL は `https://mcp.clickhouse.cloud/mcp`、Streamable HTTP、OAuth でサインイン）。そのうえで、そのサーバーの次のツールをエージェントに足します：`get_organizations`、`get_services_list`、`get_service_details`、`get_organization_cost`、`list_service_backups`、`get_service_backup_configuration`、`list_clickpipes`、`get_clickpipe`。クエリ用のツールは組み込みのものと重なるので、足さなくてかまいません。ほかのサーバーと同じく、足すとそのサーバーにサインインするまで、どのチャットも先へ進みません。足さない場合は、これらについて Cloud コンソールを案内します。
+任意の設定として、費用、tier、バックアップ、ClickPipes も読ませられます。Agents に組み込みの **ClickHouse** サーバーには、これらを読む Cloud のツール（`get_organization_cost`、`list_service_backups`、`list_clickpipes` など）がありません。エージェントに読ませるには、**MCP設定** で ClickHouse Cloud のリモート MCP サーバーを自分のサーバーとして足します（URL は `https://mcp.clickhouse.cloud/mcp`、**ストリーミング可能なHTTPS**、OAuth でサインイン）。そのうえで、そのサーバーの次のツールをエージェントに足します：`get_organizations`、`get_services_list`、`get_service_details`、`get_organization_cost`、`list_service_backups`、`get_service_backup_configuration`、`list_clickpipes`、`get_clickpipe`。クエリ用のツールは組み込みのものと重なるので、足さなくてかまいません。ほかのサーバーと同じく、足すとそのサーバーにサインインするまで、どのチャットも先へ進みません。足さない場合は、これらについて Cloud コンソールを案内します。
 
 任意の設定として、クラウドプロバイダのドキュメントも引けるようにできます。設計の段（`poc-architecture-design`）では、プライベート接続、リージョンごとの提供状況、データ源側の IAM など、プロバイダ側の事実が要ります。プロバイダごとに公式のドキュメントの MCP サーバーがあり、上の Cloud のサーバーと同じ手順で足せます。既定では足しません。PoC が設計の段に入るときに、PoC で使うクラウドの 1 つだけを足します。サーバーを足すたびに、エージェントの検索の文の送り先が増え、関係のないプロバイダの道具は迷いのもとになるからです。足さない場合は、エージェントがプロバイダのドキュメントの URL を案内します。
 

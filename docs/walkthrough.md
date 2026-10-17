@@ -23,7 +23,7 @@ The agent picks `poc-plan-builder`:
 
 The lines under the agent's name (for example "Loaded poc-plan-builder skill …") are ClickHouse Agents' own summary of the tool steps, not the skills' output; they appear in English even when you write in another language.
 
-**What comes back:** what the service holds now, read from system tables, each criterion with a measurement method and a public source, and questions: the pass thresholds it still needs, and the environment (provider and region, release channel, whether Remote MCP and Generative AI features are on, how test traffic will be tagged). Here it also pointed out that the PoC service runs on GCP while the data sits in AWS.
+**What comes back:** what the service holds now, read from system tables, each criterion with a measurement method and a public source, and questions for what it still needs: the pass thresholds, and the parts of the environment that are not settled (provider and region, release channel, whether Remote MCP and Generative AI features are on, how test traffic will be tagged). Here it also pointed out that the PoC service runs on GCP while the data sits in AWS.
 
 ![Questions about the environment](images/en/1-plan-env.png)
 
@@ -43,7 +43,7 @@ Paste them, and the agent writes `CREATE TABLE` candidates. Each choice (`ORDER 
 
 ![Each choice with its basis](images/en/2-design-choices.png)
 
-The design is a file, `poc-design-<name>.md`. Attach it next to the plan. If you add the AWS knowledge MCP server ([setup.md, step 4](setup.md#4-create-the-agent)), the agent can also check the AWS side (here: MSK access from another account and data transfer charges), sending only general questions.
+The design is a file, `poc-design-<name>.md`. Attach it next to the plan. For facts on the cloud provider's side, the agent uses the provider's documentation MCP server if you have added one ([setup.md, step 4](setup.md#4-create-the-agent)), sending only general questions; this run had the AWS one and used it for MSK access from another account and data transfer charges. Without one, it gives the provider's documentation URLs.
 
 **Next:** build. That is your work: the agent's connection is read-only. Here the tables were created with `clickhouse-client` and 13 days of dummy data were loaded, with two deliberate mistakes: `shipment_events` was created time-first (`ORDER BY (event_time, shipment_id)`), and 2026-10-09 was left out.
 
@@ -51,15 +51,19 @@ The design is a file, `poc-design-<name>.md`. Attach it next to the plan. If you
 
 **Ask**, while you build or after, as often as you like:
 
-> Sorry, you are right: I loaded the test data a moment ago … The warehouse has 5,600,000 rows in shipment_events (2026-10-01 to 2026-10-14, 400,000 per day, UTC) and 120 in depots. I keep the ORDER BY as it is for now. Approved: run A and B.
+> I have created the tables in aozora_en. Nothing is loaded yet and nothing is running. Does the build match the design?
 
-**What comes back:** one row per item of the design, with what the design expects, what the service has now, a status (matches, differs, not there yet, not checked) and the query it was read from. To count rows per day in your table, it shows the queries with their `EXPLAIN ESTIMATE` and waits for your approval first.
-
-![Fit and gap, with the missing day](images/en/3-fitgap-table.png)
-
-For each difference it gives both candidates, change the design or change the build, with a source, and the next steps in order:
+**What comes back:** one row per item of the design, with what the design expects, what the service has now, a status (matches, differs, not there yet, not checked) and the query it was read from. For each difference it gives both candidates, change the design or change the build, with a source, and the next steps in order. Here it found the time-first `ORDER BY`. (It also found rows already in the tables, because the test data had been loaded just before; it reported what it read, not what it was told.)
 
 ![A difference with both candidates](images/en/3-fitgap-gap.png)
+
+To compare row counts, give it the source's counts:
+
+> … The warehouse has 5,600,000 rows in shipment_events (2026-10-01 to 2026-10-14, 400,000 per day, UTC) and 120 in depots. …
+
+To count rows per day in your table, it first shows the queries with their `EXPLAIN ESTIMATE` and waits for your approval. After approval it found the missing day:
+
+![The missing day, from the approved per-day counts](images/en/3-fitgap-table.png)
 
 **Next:** fix what you decide to fix (here: load 2026-10-09), and paste the lines it proposes into the plan's `## Results` and `## Log`.
 
@@ -69,7 +73,7 @@ For each difference it gives both candidates, change the design or change the bu
 
 > I ran the representative queries five times each with the design's log_comment tags. Nothing is running now. Please review the schema and these queries.
 
-**What comes back:** up to five candidates, each with what was observed in system tables, the rule or documentation page behind it, how to verify it, and how it relates to the design. Here the first finding was that every lookup returned 0 rows, so the parcel IDs used for the test did not exist. The second was that under the time-first key the lookup read half the table's marks, set against the design's choice of `(shipment_id, event_time)`.
+**What comes back:** up to five candidates, each with what was observed in system tables, the rule or documentation page behind it, how to verify it, and how it relates to the design. Here: under the time-first key the parcel lookup read about half the table's marks on average, and every lookup returned 0 rows, so the parcel IDs used for the test did not exist.
 
 ![A finding with its evidence and its relation to the design](images/en/4-review-finding.png)
 
@@ -93,7 +97,7 @@ Then run a load test yourself, tag it with `log_comment`, and ask for a review. 
 
 ![Two lookup runs against criterion 1](images/en/5-loadtest-compare.png)
 
-**Next:** these runs carry `api_load_*` tags, not the `api_lookup` tag that criterion 1 reads, so the agent does not count them. Rerun with the plan's tag, or change the plan.
+**Next:** whether a run counts depends on the tags in the criterion's scope in the plan. Here criterion 1 reads only `api_lookup`, and these runs carry `api_load_*`, so the agent does not count them. It also points out that each table was measured once and the cache conditions differed. Rerun with the plan's tag and equal conditions, or change the plan.
 
 ## 6. Daily note and summary (`poc-daily-progress`, `poc-summary`)
 

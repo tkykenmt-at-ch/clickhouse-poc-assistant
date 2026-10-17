@@ -1,6 +1,6 @@
 ---
 name: poc-fit-gap
-description: Checks a ClickHouse Cloud service against the PoC design and plan while or after the user builds it - tables, keys and column types, materialized views and dictionaries, the platform decisions, ingest path and shape, row counts against the source, load errors, freshness and the tags the success criteria need - and says for each item whether it matches, differs or is not there yet, with the next steps in order. Use when the user asks "設計どおりにできているか見て", "次に何をすればいい？", "データ入った？", whether the build matches the design, or what to do next.
+description: Checks a ClickHouse Cloud service against the PoC design and plan while or after the user builds it - tables, keys and column types, materialized views and dictionaries, the platform decisions, ingest path and shape, row counts against the source, load errors, freshness and the tags the success criteria need - and says for each item whether it matches, differs or is not there yet, with the next steps in order. Use when the user asks "設計どおりにできているか見て", "構築で次に何をすればいい？", "データ入った？", whether the build matches the design, or what to do next.
 always-apply: false
 user-invocable: true
 ---
@@ -31,11 +31,21 @@ can ask during the build or after it, as often as they like. The connection is r
   ask, and wait for the answer before running any query; do not assume. While you wait, write only what you have read
   in this conversation.
 - Queries on the user's own tables (per-day row counts, the newest event time) are allowed only after the user
-  approves them, as in `poc-schema-query-advisor`: run `SELECT 1 SETTINGS log_comment = 'poc-assistant'` first; write
-  each query exactly as you will run it, with `LIMIT` and, if settings are accepted,
-  `SETTINGS log_comment = 'poc-assistant', max_execution_time = 60`; give its `EXPLAIN ESTIMATE` (without the
-  `SETTINGS` clause); run nothing on user tables until the user approves the set. Return aggregates only (counts per
-  day, a time difference), never row values. Without settings, run only queries estimated under 100 million rows.
+  approves them:
+  1. Run `SELECT 1 SETTINGS log_comment = 'poc-assistant'` first. If it is accepted, end every query on user tables
+     with `SETTINGS log_comment = 'poc-assistant', max_execution_time = 60`; if not, they run without `SETTINGS`.
+  2. Write each query exactly as you will run it, with `LIMIT`, and give its `EXPLAIN ESTIMATE` (run without the
+     `SETTINGS` clause). If `EXPLAIN ESTIMATE` cannot run, do not query user tables. Run nothing on user tables until
+     the user approves the set; a query outside the approved set needs approval again.
+  3. Return aggregates only (counts per day, a time difference). Never output values of user columns such as IDs,
+     names or free text; database, table and column names are fine.
+  4. Without settings, run only queries estimated under 100 million rows, and say that they had no time limit and are
+     counted in the workload numbers.
+  5. Do not run them while a load or a measured run is going on.
+- To read a design item that no listed query returns (for example a table's TTL or `ttl_only_drop_parts` from
+  `system.tables.engine_full`, or the number of database users), you may write a read-only query on system tables,
+  with a filter on the database and `LIMIT`. Output counts, not user names. Show each such query in the output and mark
+  it as yours, separately from the listed ones.
 - Platform items: use the Cloud tools only when they are in this conversation ("Cloud tools" in
   `reference/checks-cloud-service.md`). Do not output endpoints, the IP access list, private endpoint IDs or the IAM
   role; say only whether a setting is there. If the tools are missing, say where in the Cloud console the user can see
@@ -71,8 +81,11 @@ can ask during the build or after it, as often as they like. The connection is r
 4. Compare item by item:
    - Tables and columns: compare `ORDER BY`, `PARTITION BY`, the engine and each column type with the design's DDL.
      The service shows keys in its normalized form (for example without spaces); compare the meaning, not the text.
-   - Objects: each designed materialized view writes to the designed table and reads from the designed source; each
-     dictionary is loaded (`dictionary_status`) and has elements.
+   - Objects: each designed materialized view writes to the designed table and reads from the designed source. For a
+     refreshable one (`refreshable = 1`), `reads_from` is empty because it reads on a schedule, not on insert: mark its
+     source `not checked` unless the user gives the view's query. Each designed dictionary exists with the designed
+     source; `NOT_LOADED` is normal (dictionaries load on first use) and `DIRECT` and `CACHE` layouts hold few or no
+     elements, so neither is a gap. A `FAILED` status, or 0 elements in another layout after it loaded, is.
    - Platform: provider and region from `get_services_list`; ClickPipes from `list_clickpipes` (state only); private
      connections and the IP access list only as "set" or "not set".
    - Ingest: rows and inserts per day against the design's ingest path and batch shape; errors and failed async

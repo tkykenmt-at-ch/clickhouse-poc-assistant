@@ -11,7 +11,7 @@ This guide sets up the "PoC assistant" agent in [ClickHouse Agents](https://clic
 3. Upload each zip as a skill in ClickHouse Agents ([step 3](#3-upload-the-skills)).
 4. Create the agent and paste the instructions ([step 4](#4-create-the-agent)).
 5. Build the PoC plan with the agent and attach it ([step 5](#5-plan-the-poc-and-attach-the-plan)).
-6. Ask for statistics, a review or the daily note ([step 6](#6-use-it)).
+6. Ask for the design, a check against it, statistics, a review or the daily note ([step 6](#6-use-it)).
 
 ## 1. Enable the Remote MCP server on the service
 
@@ -84,14 +84,14 @@ Click **Create**. When you change the agent later, click **Save** and wait for t
 
 The first time the agent calls the ClickHouse tool, it asks you to connect. If it does not, open **MCP settings** in the left bar, find **ClickHouse**, and click **Connect**. The agent sees only the organizations and services your Cloud user can access.
 
-Optional: cost, tier, backups and ClickPipes. The built-in **ClickHouse** server in Agents does not offer the Cloud tools for these (`get_organization_cost`, `list_service_backups`, `list_clickpipes` and others). To let the agent read them, add the ClickHouse Cloud remote MCP server as your own server in **MCP settings** (URL `https://mcp.clickhouse.cloud/mcp`, Streamable HTTP, sign in with OAuth), then add these of its tools to the agent: `get_organizations`, `get_services_list`, `get_service_details`, `get_organization_cost`, `list_service_backups`, `get_service_backup_configuration`, `list_clickpipes`, `get_clickpipe`. Its query tools duplicate the built-in ones and are not needed. Like any other server, every chat then waits until you have signed in to it. Without it, the agent points to the Cloud console for these.
+Optional: cost, tier, backups and ClickPipes. The built-in **ClickHouse** server in Agents does not offer the Cloud tools for these (`get_organization_cost`, `list_service_backups`, `list_clickpipes` and others). To let the agent read them, add the ClickHouse Cloud remote MCP server as your own server in **MCP settings** (URL `https://mcp.clickhouse.cloud/mcp`, **Streamable HTTPS**, sign in with OAuth), then add these of its tools to the agent: `get_organizations`, `get_services_list`, `get_service_details`, `get_organization_cost`, `list_service_backups`, `get_service_backup_configuration`, `list_clickpipes`, `get_clickpipe`. Its query tools duplicate the built-in ones and are not needed. Like any other server, every chat then waits until you have signed in to it. Without it, the agent points to the Cloud console for these.
 
 Optional: the cloud provider's documentation. The design stage (`poc-architecture-design`) needs facts on the provider's side, such as private endpoints, regional availability and IAM on the sources. Each provider has an official documentation MCP server that can be added like the Cloud server above. Add none by default; when the PoC reaches the design stage, add only the one for the PoC's cloud, because each server is another place the agent's search text is sent and unrelated providers' tools only add noise. Without one, the agent gives the provider's documentation URLs instead.
 
 | Provider | URL in **MCP settings** | Authentication | Tools to add to the agent | Tested in Agents (2026-10-16) |
 |---|---|---|---|---|
 | [AWS Knowledge MCP Server](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server) | `https://knowledge-mcp.global.api.aws` | None (rate limited) | `aws___search_documentation`, `aws___read_documentation`, `aws___list_regions`, `aws___get_regional_availability` | Added with **No auth**; chats did not wait for a sign-in |
-| [Microsoft Learn MCP Server](https://learn.microsoft.com/ja-jp/training/support/mcp) | `https://learn.microsoft.com/api/mcp` | None (use is subject to the Microsoft Learn terms) | `microsoft_docs_search`, `microsoft_docs_fetch`, `microsoft_code_sample_search` | Added with **No auth**; chats did not wait for a sign-in |
+| [Microsoft Learn MCP Server](https://learn.microsoft.com/training/support/mcp) | `https://learn.microsoft.com/api/mcp` | None (use is subject to the Microsoft Learn terms) | `microsoft_docs_search`, `microsoft_docs_fetch`, `microsoft_code_sample_search` | Added with **No auth**; chats did not wait for a sign-in |
 | [Google Developer Knowledge MCP](https://developers.google.com/knowledge/mcp) | `https://developerknowledge.googleapis.com/mcp` | OAuth 2.0 client ID from your own Google Cloud project | `search_documents`, `get_documents`, `answer_query` | Not tested yet (needs an OAuth client) |
 
 - **Add it**: **MCP settings** → **Add MCP** → name, URL, **Streamable HTTPS**, the authentication above, tick **I trust this application**, **Create MCP server**. Then add its tools to the agent in Agent Builder and click **Save**. Leave out tools that the agent does not need.
