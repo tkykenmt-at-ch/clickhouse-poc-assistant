@@ -84,8 +84,9 @@ can ask during the build or after it, as often as they like. The connection is r
    - Objects: each designed materialized view writes to the designed table and reads from the designed source. For a
      refreshable one (`refreshable = 1`), `reads_from` is empty because it reads on a schedule, not on insert: mark its
      source `not checked` unless the user gives the view's query. Each designed dictionary exists with the designed
-     source; `NOT_LOADED` is normal (dictionaries load on first use) and `DIRECT` and `CACHE` layouts hold few or no
-     elements, so neither is a gap. A `FAILED` status, or 0 elements in another layout after it loaded, is.
+     source; `NOT_LOADED` is normal (dictionaries load on first use) and layouts whose name contains `Direct` or `Cache`
+     (for example `ComplexKeyDirect`, `SSDCache`) hold few or no elements, so neither is a gap. A `FAILED` status on any
+     replica (`dictionary_status` lists every status seen), or 0 elements in another layout after it loaded, is.
    - Platform: provider and region from `get_services_list`; ClickPipes from `list_clickpipes` (state only); private
      connections and the IP access list only as "set" or "not set".
    - Ingest: rows and inserts per day against the design's ingest path and batch shape; errors and failed async

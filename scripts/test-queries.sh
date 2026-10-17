@@ -85,6 +85,7 @@ admin "CREATE MATERIALIZED VIEW app.daily_mv TO app.daily AS SELECT toDate(ts) A
 admin "CREATE MATERIALIZED VIEW app.inner_mv ENGINE = MergeTree ORDER BY n AS SELECT n FROM app.src"
 admin "CREATE TABLE app.refresh_target (n UInt64) ENGINE = MergeTree ORDER BY n"
 admin "CREATE MATERIALIZED VIEW app.refresh_mv REFRESH EVERY 1 HOUR TO app.refresh_target AS SELECT n FROM app.src"
+admin "CREATE MATERIALIZED VIEW app.refresh_inner REFRESH EVERY 1 HOUR ENGINE = MergeTree ORDER BY n AS SELECT n FROM app.src WHERE toString(n) != 'x TO y'"
 admin "SYSTEM FLUSH LOGS"
 
 # The least-privilege user from export/setup_user.sql.
@@ -189,6 +190,10 @@ elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "refresh_mv
   echo "FAIL 40 did not list app.refresh_mv as refreshable with its target"; failed=$((failed + 1))
 elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "daily_mv" && $7 == "" && $8 == "" {found=1} END {exit !found}'; then
   echo "FAIL 40 gave dictionary columns to a materialized view"; failed=$((failed + 1))
+elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "refresh_inner" && $4 == "" && $5 == "1" {found=1} END {exit !found}'; then
+  echo "FAIL 40 took a quoted TO for the target of app.refresh_inner"; failed=$((failed + 1))
+elif ! as_reader fitgap/40_objects.sql | awk -F'\t' 'NR > 1 && $2 == "empty_dict" && $6 == "clickhouse: app.dict_src" {found=1} END {exit !found}'; then
+  echo "FAIL 40 did not give the dictionary source as clickhouse: app.dict_src"; failed=$((failed + 1))
 else
   echo "ok   40 lists the materialized views (TO, inner, refreshable) and the dictionary"
 fi
