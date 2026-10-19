@@ -11,7 +11,7 @@ ClickHouse Cloud の PoC（概念実証）を、推測でなく根拠で進め�
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-[始め方](#始め方) | [通しの手順](docs/walkthrough.ja.md) | [導入の手順](docs/setup.ja.md) | [ドキュメントのサイト](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.ja.html) | [English](README.md)
+[始め方](#始め方) | [通しの手順](docs/walkthrough.ja.md) | [導入の手順](docs/setup.ja.md) | [ドキュメントのサイト](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/index.html) | [English](README.md)
 
 <img src="docs/images/ja/1-request.png" alt="自分の言葉で頼んだ一言と、選ばれたスキル" width="760">
 

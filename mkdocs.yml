@@ -1,0 +1,95 @@
+# Docs site, built by .github/workflows/pages.yml and published on GitHub Pages.
+site_name: PoC Assistant
+site_description: A ClickHouse Agents agent that helps run a ClickHouse Cloud proof of concept, with evidence and sources.
+site_url: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/
+repo_url: https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant
+repo_name: clickhouse-poc-assistant
+docs_dir: docs
+# Keep the page URLs of the earlier site (setup.html, not setup/).
+use_directory_urls: false
+strict: true
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tracking
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+          nav_translations:
+            Home: ホーム
+            Setup: セットアップ
+            Walkthrough: 通しの手順
+            Development: 開発
+
+nav:
+  - Home: index.md
+  - Setup: setup.md
+  - Walkthrough: walkthrough.md
+  - Development: development.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+      # Keep non-ASCII headings in anchors (#任意で足す-mcp-サーバー), as the earlier site did.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+
+extra:
+  generator: false
+
+validation:
+  anchors: warn
+  unrecognized_links: warn
+
+hooks:
+  - scripts/mkdocs/redirects.py

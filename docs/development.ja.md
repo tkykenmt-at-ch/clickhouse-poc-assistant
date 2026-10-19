@@ -1,9 +1,7 @@
 # 開発者向け：構成、作り方、クエリの決まり
 
-[English](development.md)
-
 リポジトリの構成、zip の作り方と試験、すべてのクエリが従う決まりをまとめます。
-エージェントの導入と使い方は [setup.ja.md](setup.ja.md) を見てください。
+エージェントの導入と使い方は [セットアップ](setup.ja.md) を見てください。
 
 ## 構成
 
@@ -24,7 +22,9 @@
 | `scripts/fetch-public-skills.sh` | 公開スキルを、コミットを固定して変更せずに取得し、ライセンスと一緒に置く。`build.sh` がスキルの `vendor/` に入れる |
 | `scripts/test-queries.sh` | 使い捨てのローカルの ClickHouse サーバーで、最小権限の DB ユーザーとして全クエリを実行する |
 | `.github/workflows/build.yml` | CI とリリース（下記） |
-| `docs/` | 導入の手順と通しの手順（画面は `docs/images/`） |
+| `docs/`、`mkdocs.yml` | ドキュメントのサイト。導入の手順と通しの手順（画面は `docs/images/`）を MkDocs Material で作る。日本語のページは `.ja.md` で終わる |
+| `scripts/mkdocs/` | サイトの依存の固定と、旧 URL の `<page>.ja.html` を `ja/<page>.html` へ転送するフック |
+| `.github/workflows/pages.yml` | プルリクエストでサイトを作って確かめ、`main` から GitHub Pages に公開する |
 | `LICENSE` | Apache-2.0。どの zip にも写しを入れる。同梱した公開スキルには ClickHouse/agent-skills のライセンスを付ける |
 
 ## 作り方
@@ -34,6 +34,7 @@ GitHub Actions が、push とプルリクエストのたびに次を実行しま
 ```bash
 scripts/build.sh                # dist/ch-sizing-export.zip と dist/poc-assistant-skill.zip（公開スキルの取得にネットワークが要る）
 scripts/test-queries.sh         # PATH に clickhouse のバイナリが必要
+pip install -r scripts/mkdocs/requirements.txt && mkdocs serve   # サイトを http://127.0.0.1:8000/clickhouse-poc-assistant/ で見る
 ```
 
 スキルの zip には、`SKILL.md`、`stages/`、ライセンス、そこに名前が書かれたファイル（`queries/...sql`、`reference/...md`、`tools/...py`）、`vendor/` の公開スキルが入ります。同梱した参照ファイルが名前を挙げた参照ファイルも入ります。

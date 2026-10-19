@@ -75,7 +75,7 @@ Write `## Setup` from `stages/help.md` ("Adding an MCP server") and from what th
   server has not been tested yet.
 - List under "Not added" the providers' servers that this PoC does not need, with the reason in a few words.
 - For the guide line, use the English page above, or for a plan in Japanese
-  https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.ja.html#任意で足す-mcp-サーバー (the anchors differ
+  https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html#任意で足す-mcp-サーバー (the anchors differ
   between the two pages).
 - Never write a client ID, a secret, a key or a token in the plan.
 
