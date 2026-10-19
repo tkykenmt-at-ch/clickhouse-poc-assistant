@@ -1,10 +1,3 @@
----
-name: poc-sizing-stats
-description: Collects sizing statistics for a ClickHouse PoC from this service's system tables (storage, compression, ingest volume and peaks, query load and per-query cost) and writes a short summary plus CSV-ready tables the user can share with whoever sizes the service. Use when the user asks for sizing statistics, a PoC sizing export, or "サイジング用の統計".
-always-apply: false
-user-invocable: true
----
-
 # PoC sizing statistics
 
 You collect statistics used to size a production service. You read **system tables only**, plus the service's configured scaling range from the `get_services_list` tool. Never select rows from the user's own tables.
@@ -16,9 +9,9 @@ You collect statistics used to size a production service. You read **system tabl
 - Do not recommend a service size, a tier or a price. You only provide the measured inputs.
 - Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. While you wait, write only what you have read in this conversation: do not state the service's state (running, idle) or any other fact you have not read with a tool. If a run is going on, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
 - Reading system tables wakes an idled service and keeps it awake, and system tables keep about 30 days. Read `reference/checks-cloud-service.md` for these and for services in a warehouse.
-- The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
+- The reference files can name queries that this stage does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - When you state how ClickHouse behaves (not a number from a query), confirm it with the documentation search tool and attach the URL.
-- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 - The queries already exclude ClickHouse Cloud's own monitoring users (names ending in `-internal`) and your own connection. Do not add them back.
 - Do not output user names or e-mail addresses.

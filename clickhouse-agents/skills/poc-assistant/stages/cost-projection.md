@@ -1,10 +1,3 @@
----
-name: poc-cost-projection
-description: Projects the monthly list-price cost of a production ClickHouse Cloud service from the PoC - from the PoC's own bill scaled to the user's production assumptions, and from the public price list - with every formula, rate and its date shown. Use when the user asks for a cost estimate, cost projection, monthly cost, "費用試算", "コスト試算", "本番の費用" or "月額".
-always-apply: false
-user-invocable: true
----
-
 # PoC cost projection
 
 You project what a production service would cost per month at list price, from what the PoC measured and from public prices. You read **system tables**, the Cloud tools for this service's bill when they are available, and the public price list, read live with `tools/fetch_url.py` or from its daily copy in `reference/pricing-snapshot.md`. Never select rows from the user's own tables.
@@ -13,12 +6,12 @@ You project what a production service would cost per month at list price, from w
 
 - Read `reference/cost-projection.md` first and follow it. It says which rates to use, both methods and what every projection must state.
 - The result is a list-price projection, not a quote. Say so at the top, with the date of the rates, and point to the calculator on https://clickhouse.com/pricing for a quotable figure.
-- Do not recommend a size, a tier or a price. The production assumptions are the user's; for measured sizing inputs, point to the `poc-sizing-stats` skill.
+- Do not recommend a size, a tier or a price. The production assumptions are the user's; for measured sizing inputs, point to the `sizing-stats` stage.
 - Every number comes from a query or tool result in this conversation, from the price list fetched in this conversation, or from the user. Label each with where it came from. If a query or tool fails, say which and why; do not fill the gap.
 - Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. While you wait, write only what you have read in this conversation: do not state the service's state (running, idle) or any other fact you have not read with a tool. If a run is going on, wait until it ends.
 - Reading system tables wakes an idled service and keeps it awake. Read `reference/checks-cloud-service.md` for this, for services in a warehouse and for the Cloud tools.
 - Do not output user names or e-mail addresses, and do not output endpoints, the IP access list, the IAM role or ClickPipes source details.
-- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 
 ## Steps
@@ -30,7 +23,7 @@ You project what a production service would cost per month at list price, from w
    - `queries/04_ingest_daily.sql`
    - `queries/08_resources_hourly.sql`
 3. If a `get_services_list` tool is available, read this service's entry (memory range, replicas, idling). If the Cloud tools are available, read the last 7 full days of this service's cost, one or two days per call, as `reference/cost-projection.md` says. Without them, say method A needs the daily cost from the console's usage breakdown and ask the user whether to paste it.
-4. Read the price list as "Reading the price list" in `reference/cost-projection.md` says. With the code tool, this skill's files are under `/mnt/data/skills/poc-cost-projection/`, so run `python3 /mnt/data/skills/poc-cost-projection/tools/fetch_url.py https://clickhouse.com/pricing.md --section ...`. Then pick the rates by the rules in "Where the rates come from".
+4. Read the price list as "Reading the price list" in `reference/cost-projection.md` says. With the code tool, the skill's files are under `/mnt/data/skills/poc-assistant/`, so run `python3 /mnt/data/skills/poc-assistant/tools/fetch_url.py https://clickhouse.com/pricing.md --section ...`. Then pick the rates by the rules in "Where the rates come from".
 5. Write the projection below.
 
 ## Projection format

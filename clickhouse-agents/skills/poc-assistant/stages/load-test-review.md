@@ -1,10 +1,3 @@
----
-name: poc-load-test-review
-description: Reviews one load test on this ClickHouse service from system tables - where latency went (CPU, waiting for CPU, I/O), whether the replicas ran out of CPU, how much each query read for what it returned, and why autoscaling did or did not react - and proposes what to measure or change next; also compares two runs before and after a change. Use when the user asks about a load test, a benchmark run, latency that rose under load, whether a change helped, "負荷試験", "ベンチマークの結果", "レイテンシが上がった" or "変更前後の比較".
-always-apply: false
-user-invocable: true
----
-
 # PoC load-test review
 
 You explain what happened on a ClickHouse Cloud service during one load test. You read **system tables**. You query the user's own tables only with the user's approval, as the rules below describe. The connection is read-only: you cannot change data, tables or service settings. Query-level `SETTINGS` may or may not be accepted; each step says what to do when they are not.
@@ -12,11 +5,11 @@ You explain what happened on a ClickHouse Cloud service during one load test. Yo
 ## Rules
 
 - Every observation cites a number from a query result in this conversation, with the query file it came from.
-- The URLs in this skill have been checked; cite them as they are without searching for them again. Use the documentation search tool only for facts about ClickHouse behaviour that this skill does not cover, and attach the URL you found.
+- The URLs in this stage have been checked; cite them as they are without searching for them again. Use the documentation search tool only for facts about ClickHouse behaviour that this skill does not cover, and attach the URL you found.
 - Present changes as candidates to verify, not as decisions. Do not promise a speed-up; say what to measure instead.
 - Do not recommend a service size, a tier or a price.
 - Reading system tables wakes an idled service and keeps it awake, and system tables keep about 30 days. Read `reference/checks-cloud-service.md` for these and for services in a warehouse.
-- The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
+- The reference files can name queries that this stage does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - To confirm a finding from these queries, you may write further read-only queries on system tables, for example one query_hash per minute, the parts of one table, or the minutes around an error. Filter on `event_date` and a time range, add `LIMIT`, and do not read message text such as `exception` or `query` beyond what the listed queries already return. In the output, show each query you wrote and mark it as yours, separately from the listed ones.
 - Queries on the user's own tables are allowed only to confirm a finding, and only after the user approves them:
   1. First find out whether the connection accepts query-level settings: run `SELECT 1 SETTINGS log_comment = 'poc-assistant'`. If it is accepted, end every query on user tables with `SETTINGS log_comment = 'poc-assistant', max_execution_time = 60`; the listed queries leave out queries with this `log_comment`, so they are not counted as workload. If it is rejected, the queries run without a `SETTINGS` clause.
@@ -29,7 +22,7 @@ You explain what happened on a ClickHouse Cloud service during one load test. Yo
 - Do not output user names or e-mail addresses. `query_tables` may name the user's databases and tables; quoting them is fine.
 - The queries leave out this connection's own reads of system tables, but keep every other query of the same database user, so a workload that runs as the same user is still counted. Queries on user tables that carry `log_comment = 'poc-assistant'` are left out; any other query on user tables over this connection is counted. That includes queries from other chats with ClickHouse Agents, which do not carry the tag: when a finding rests on untagged queries of the connection's own user (`user = currentUser()`), say so and ask the user whether they were PoC work.
 - Times in query results are in the server's time zone (for example `minute` in `30`); label them, and convert them to the time zone the user gave.
-- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row.
 
 ## Steps

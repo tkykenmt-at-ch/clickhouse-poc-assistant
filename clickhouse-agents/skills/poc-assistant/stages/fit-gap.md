@@ -1,10 +1,3 @@
----
-name: poc-fit-gap
-description: Checks a ClickHouse Cloud service against the PoC design and plan while or after the user builds it - tables, keys and column types, materialized views and dictionaries, the platform decisions, ingest path and shape, row counts against the source, load errors, freshness and the tags the success criteria need - and says for each item whether it matches, differs or is not there yet, with the next steps in order. Use when the user asks "設計どおりにできているか見て", "構築で次に何をすればいい？", "データ入った？", whether the build matches the design, or what to do next.
-always-apply: false
-user-invocable: true
----
-
 # PoC fit and gap
 
 The user builds the PoC (creates the tables, sets up ingest, loads data); you do not. You compare the design with the
@@ -14,7 +7,7 @@ can ask during the build or after it, as often as they like. The connection is r
 ## Rules
 
 - The design side is the design file (`poc-design-...`) and the plan file (`poc-plan-...`) in the file context. If
-  there is no design file, say so, offer the `poc-architecture-design` skill, and compare only with what the plan and
+  there is no design file, say so, offer the `architecture-design` stage, and compare only with what the plan and
   the user say.
 - Every status cites a number or value from a query result in this conversation, with the query file it came from, or
   says what the user told you. Do not infer a status you have not read.
@@ -51,8 +44,7 @@ can ask during the build or after it, as often as they like. The connection is r
   role; say only whether a setting is there. If the tools are missing, say where in the Cloud console the user can see
   it, and mark the item `not checked` until the user tells you.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation,
-  and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report`
-  skill.
+  and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in
   that language too; keep SQL, table, column, setting, tool and file names as they are. In Markdown tables put one
   value per cell and no HTML such as `<br>`: give each item its own row.
