@@ -1,7 +1,5 @@
 # Walkthrough: one PoC from plan to share report
 
-[日本語](walkthrough.ja.md)
-
 This page follows one PoC through the PoC assistant, step by step, with screenshots from ClickHouse Agents. **The company, Aozora Logistics, is fictional, and all data is synthetic**, generated with SQL on a test service named `poc-demo`. The screenshots were taken on 2026-10-17 with v0.5.0, when each stage was a separate skill (`poc-plan-builder` and so on); since v0.6.0 the agent loads one skill, `poc-assistant`, and reads the stage's file. The wording of each answer differs from run to run.
 
 The scenario: Aozora Logistics wants to know, in a three-week PoC, whether its parcel tracking analytics and the back end of its tracking API can move from its current data warehouse to ClickHouse Cloud. Today the warehouse exports Parquet files to S3 every day and new events flow through Amazon MSK. The PoC data goes into a new, empty database `aozora_en`:
@@ -9,7 +7,7 @@ The scenario: Aozora Logistics wants to know, in a three-week PoC, whether its p
 - `shipment_events`: one row per tracking event (14 days, 400,000 events a day)
 - `depots`: one row per depot (120 rows)
 
-Set up the agent first ([setup.md](setup.md)). Each step below is a request in plain words; you do not need to name the stage. You can keep one chat or start a new one for a later stage: the plan and design files you attach carry what the next stage needs.
+Set up the agent first ([Setup](setup.md)). Each step below is a request in plain words; you do not need to name the stage. You can keep one chat or start a new one for a later stage: the plan and design files you attach carry what the next stage needs.
 
 ## 1. Plan the PoC (`plan-builder`)
 

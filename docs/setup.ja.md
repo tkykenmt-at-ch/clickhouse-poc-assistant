@@ -1,7 +1,5 @@
 # 導入の手順：スキルの導入とエージェントの作成
 
-[English](setup.md)
-
 [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents) にエージェント「PoC アシスタント」を作る手順です。
 ClickHouse Agents（ベータ）を使える ClickHouse Cloud の組織と、評価に使うサービスが必要です。
 

@@ -1,6 +1,6 @@
 # PoC アシスタント
 
-[English](index.md) · [GitHub のリポジトリ](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant) · [最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)
+[GitHub のリポジトリ](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant) · [最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)
 
 [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents) で動く、ClickHouse Cloud の PoC を手伝うエージェントです。
 サービスの system テーブルと公式ドキュメントを読み、数値とその根拠を付けて答えます。

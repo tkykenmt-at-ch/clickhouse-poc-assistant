@@ -1,8 +1,6 @@
 # Development: layout, build and query conventions
 
-[日本語](development.ja.md)
-
-For contributors: how the repository is laid out, how the zips are built and tested, and the rules every query follows. To install and use the agent, see [setup.md](setup.md).
+For contributors: how the repository is laid out, how the zips are built and tested, and the rules every query follows. To install and use the agent, see [Setup](setup.md).
 
 ## Repository layout
 
@@ -23,7 +21,9 @@ For contributors: how the repository is laid out, how the zips are built and tes
 | `scripts/fetch-public-skills.sh` | Downloads public skills unmodified at a pinned commit, with their license; `build.sh` puts them under the skill's `vendor/`. |
 | `scripts/test-queries.sh` | Runs every query on a throwaway local ClickHouse server as a least-privilege user. |
 | `.github/workflows/build.yml` | CI and releases (see below). |
-| `docs/` | Setup guide and walkthrough (`docs/images/` holds its screenshots). |
+| `docs/`, `mkdocs.yml` | The docs site: setup guide and walkthrough (`docs/images/` holds its screenshots), built with MkDocs Material. Japanese pages end in `.ja.md`. |
+| `scripts/mkdocs/` | The site's pinned requirements and a hook that forwards the old `<page>.ja.html` URLs to `ja/<page>.html`. |
+| `.github/workflows/pages.yml` | Builds the docs site on pull requests and publishes it to GitHub Pages from `main`. |
 | `LICENSE` | Apache-2.0. Every zip carries a copy; the bundled public skill carries the ClickHouse/agent-skills license. |
 
 ## Build
@@ -33,6 +33,7 @@ GitHub Actions runs on every push and pull request: it checks the SQL syntax, ru
 ```bash
 scripts/build.sh                # dist/ch-sizing-export.zip and dist/poc-assistant-skill.zip (needs network for the public skill)
 scripts/test-queries.sh         # needs a clickhouse binary on PATH
+pip install -r scripts/mkdocs/requirements.txt && mkdocs serve   # the docs site at http://127.0.0.1:8000/clickhouse-poc-assistant/
 ```
 
 The skill zip contains `SKILL.md`, `stages/`, the license, exactly the files the stages name (`queries/...sql`, `reference/...md`, `tools/...py`) and the public skills under `vendor/`. Reference files that a shipped reference file names are shipped too. The agent cannot list folders, so `SKILL.md` lists every stage file and each stage names the files it uses; the build fails if a named file is missing or a stage file is not listed.

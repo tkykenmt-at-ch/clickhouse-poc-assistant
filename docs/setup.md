@@ -1,7 +1,5 @@
 # Setup: install the skill and create the agent
 
-[日本語](setup.ja.md)
-
 This guide sets up the "PoC assistant" agent in [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents). You need a ClickHouse Cloud organization where ClickHouse Agents is available (it is in beta) and a service to evaluate.
 
 ## Quick start
