@@ -61,7 +61,7 @@ Open **Agent Builder**, choose **Create new agent**, and set:
 Instructions:
 
 ```text
-You are an assistant that helps run a ClickHouse Cloud PoC. For every request, load the poc-assistant skill first and follow the stage it points to; this includes questions about what you can do and how to set up or use this agent. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) and the design in the design file (a file starting with poc-design), both in the file context. The user builds the service, tables and ingest; you do not run DDL or loads. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Never ask for or accept passwords, API keys, client secrets or tokens. Present improvements as candidates to verify, not as decisions. Once per conversation, and at the end of a summary, cost projection or share report, add one line saying the assistant can make mistakes and findings should be checked with the ClickHouse SA. Answer in the user's language.
+You are an assistant that helps run a ClickHouse Cloud PoC. For every request, load the poc-assistant skill first and follow the stage it points to; this includes questions about what you can do and how to set up or use this agent. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) and the design in the design file (a file starting with poc-design), both in the file context. The user builds the service, tables and ingest; you do not run DDL or loads. For every PoC request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Never ask for or accept passwords, API keys, client secrets or tokens. Present improvements as candidates to verify, not as decisions. Once per conversation, and at the end of a summary, cost projection or share report, add one line saying the assistant can make mistakes and findings should be checked with the ClickHouse SA. Answer in the user's language.
 ```
 
 Add only these tools. Code Interpreter lets the cost projection run its bundled script; its sandbox had no network in testing, so the skill reads the daily copy of the price list it ships with. Use this agent, not the built-in ClickHouse Agent, whose skills are off: the answer should start by loading `poc-assistant`.
@@ -89,7 +89,7 @@ References: https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/qui
 2. The agent outputs the plan as `poc-plan-<name>.md`. Download it.
 3. In Agent Builder, open the agent, and under **File context** click **Add** and upload the file. Click **Save**.
 
-The plan needs the sections `## Target` and `## Success criteria`, and optionally `## Results` and `## Log` (the Japanese headings `## 対象`, `## 成功基準`, `## 結果` and `## 経緯` also work). Paste the daily note's result lines and your own measurements into `## Results`, and re-attach the file. Everyone who can use the agent can read this file, so create one agent per PoC.
+The plan needs the sections `## Target` and `## Success criteria`, and optionally `## Setup`, `## Results` and `## Log` (the Japanese headings `## 対象`, `## 成功基準`, `## 準備`, `## 結果` and `## 経緯` also work). `## Setup` lists what is connected and which MCP servers this PoC needs. Paste the daily note's result lines and your own measurements into `## Results`, and re-attach the file. Everyone who can use the agent can read this file, so create one agent per PoC.
 
 ## 6. Use it
 
@@ -120,7 +120,7 @@ Skills cannot be replaced in place, and deleting a skill removes it from the age
 3. Upload the new zip.
 4. In Agent Builder, open the agent, add `poc-assistant` again under **Skills**, and click **Save**. Wait for the "updated" notification.
 
-Upgrading from v0.5.0 or earlier: delete the ten `poc-*` skills and `clickhouse-architecture-advisor`, upload `poc-assistant-skill.zip`, replace the agent's instructions with the text in [step 4](#4-create-the-agent), and select `poc-assistant` and `clickhouse-best-practices` under **Skills**.
+Upgrading from v0.5.0 or earlier: delete every `poc-*` skill and `clickhouse-architecture-advisor`, upload `poc-assistant-skill.zip`, replace the agent's instructions with the text in [step 4](#4-create-the-agent), and select `poc-assistant` and `clickhouse-best-practices` under **Skills**.
 
 ## Limitations (as of 2026-10-08)
 

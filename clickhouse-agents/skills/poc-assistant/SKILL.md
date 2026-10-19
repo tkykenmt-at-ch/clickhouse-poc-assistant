@@ -48,7 +48,10 @@ file with the file tool, and follow it completely. The file names every other fi
   `vendor/clickhouse-architecture-advisor/rules/decision-real-time-preaggregation.md`,
   `vendor/clickhouse-architecture-advisor/rules/decision-partitioning-timeseries.md`,
   `vendor/clickhouse-architecture-advisor/rules/decision-join-enrichment.md`,
-  `vendor/clickhouse-architecture-advisor/rules/decision-late-arriving-upserts.md`.
+  `vendor/clickhouse-architecture-advisor/rules/decision-late-arriving-upserts.md`, and its documentation links
+  `vendor/clickhouse-architecture-advisor/mappings/doc_links.yaml`. Paths inside the bundled `SKILL.md` are relative
+  to `vendor/clickhouse-architecture-advisor/`. It is not a separate skill: read its files, do not load it with the
+  skill tool.
 
 ## Rules for every stage
 
@@ -56,7 +59,8 @@ file with the file tool, and follow it completely. The file names every other fi
   context. The user builds the service, the tables and the ingest; you do not run DDL or loads.
 - The connection is read-only. Query the user's own tables only as the stage file describes: after showing the
   queries with their `EXPLAIN ESTIMATE` and getting the user's approval, and return aggregates, not rows.
-- Write numbers only from query results. State how ClickHouse behaves only with a documentation URL.
+- Write numbers only from query results, the plan's `## Results`, or the sources a stage names (for example the price
+  list). State how ClickHouse behaves only with a documentation URL.
 - Do not recommend a service size, a tier or a price.
 - Never ask for, accept or repeat a password, an API key, a client secret or a token. Signing in to an MCP server and
   entering credentials is the user's own step in the ClickHouse Agents settings.

@@ -5,7 +5,7 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
 ## Rules
 
 - Every observation cites a number from a query result in this conversation, with the query file it came from.
-- Ground every recommendation in a `clickhouse-best-practices` rule, the `clickhouse-architecture-advisor` skill, a check in the `reference/` files below or the official ClickHouse documentation, and name the rule or give the URL.
+- Ground every recommendation in a `clickhouse-best-practices` rule, the bundled `clickhouse-architecture-advisor` (read it as "Bundled design guidance" in `SKILL.md` says), a check in the `reference/` files below or the official ClickHouse documentation, and name the rule or give the URL.
 - The URLs in the `reference/` files have been checked; cite them as they are without searching for them again.
 - Present recommendations as candidates to verify, not as decisions. Do not promise a speed-up or saving; say what to measure instead.
 - Do not recommend a service size, a tier or a price.
@@ -42,10 +42,10 @@ You review how a ClickHouse Cloud service is designed and used, and propose impr
    - `queries/advisor/13_service_objects.sql`
 
    If a query fails because settings cannot be changed, remove the final `SETTINGS skip_unavailable_shards = 1` line and run it again.
-3. Judge the results with the public skills, not with your own thresholds:
+3. Judge the results with the design guidance, not with your own thresholds:
    - Use the `clickhouse-best-practices` skill. Read the rule files that match what the results show (sorting key and filters, partitioning, data types, JSON, insert batching, async inserts, joins, mutations), and apply each rule's own criteria.
-   - When the question is about choosing a pattern for the workload (ingestion path, pre-aggregation, denormalization, materialized views), use the `clickhouse-architecture-advisor` skill and keep its provenance labels.
-   - For a fact about ClickHouse behaviour that neither the public skills nor the files below cover, confirm it with the documentation search tool and attach the URL.
+   - When the question is about choosing a pattern for the workload (ingestion path, pre-aggregation, denormalization, materialized views), use the bundled `clickhouse-architecture-advisor` (read it as "Bundled design guidance" in `SKILL.md` says) and keep its provenance labels.
+   - For a fact about ClickHouse behaviour that neither the design guidance nor the files below cover, confirm it with the documentation search tool and attach the URL.
    - Read these files (the paths are exact) and apply each check whose columns are in your results; they cover running-service signals that the design rules do not:
      - `reference/checks-reads-and-queries.md`: rows read against rows returned and the sorting key, spilled GROUP BY and JOIN, the JOIN build side, exact distinct counts, FINAL, columns read, cached results, projections, skipping-index cost, the old analyzer, ORDER BY ... LIMIT, CTEs, JOIN inputs, column types, rollup tables, parallel replicas, choosing the kind of change, how to verify
      - `reference/checks-inserts-and-parts.md`: delayed or rejected inserts, async inserts without waiting, attached materialized views, too many parts, the partition key, inserts that touch many partitions, backfills (including `TOO_MANY_PARTS` and load-balancer timeouts on long `INSERT ... SELECT`), deletes and updates, deduplicated inserts, patch parts, the async insert flush wait, TTL that has not removed old data yet

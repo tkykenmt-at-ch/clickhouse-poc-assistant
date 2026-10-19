@@ -1,10 +1,10 @@
 # Checks: the Cloud service itself
 
-These are rules about the service and about how the skills read it. The URLs have been checked; cite them as they are.
+These are rules about the service and about how the stages read it. The URLs have been checked; cite them as they are.
 
 ## Reading system tables keeps the service awake
 
-- **Rule**: querying system tables wakes an idled service and keeps it from idling, which can affect cost. Run the skills when the user asks, not continuously; for continuous monitoring point to the Cloud console or the Prometheus endpoint.
+- **Rule**: querying system tables wakes an idled service and keeps it from idling, which can affect cost. Run the stages when the user asks, not continuously; for continuous monitoring point to the Cloud console or the Prometheus endpoint.
 - **Source**: https://clickhouse.com/docs/products/cloud/features/monitoring/system-tables
 
 ## Services in a warehouse

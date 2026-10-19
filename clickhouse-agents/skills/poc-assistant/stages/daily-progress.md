@@ -64,7 +64,7 @@ If the file or either required section is missing, say which section is missing,
    - error codes from `26`, and stuck or failing background work from `27`, judged with `reference/checks-errors-and-background.md`
    - failed async insert flushes from `28`, judged with "Did async insert flushes fail?" in `reference/checks-inserts-and-parts.md`
    - if `list_clickpipes` is available, ClickPipes of this service whose `state` is not `Running` (see "Cloud tools" in `reference/checks-cloud-service.md`)
-   For each of these, check the matching rule in the `clickhouse-best-practices` skill (and `clickhouse-architecture-advisor` for pattern choices) and the documentation search tool. Keep at most three findings that a rule or a documentation page supports; drop the rest. `sample_query` has literal values replaced by `?`; quote column names, JSON keys and functions from it.
+   For each of these, check the matching rule in the `clickhouse-best-practices` skill (and, for pattern choices, the bundled `clickhouse-architecture-advisor` (read it as "Bundled design guidance" in `SKILL.md` says)) and the documentation search tool. Keep at most three findings that a rule or a documentation page supports; drop the rest. `sample_query` has literal values replaced by `?`; quote column names, JSON keys and functions from it.
 4. Write the note:
    - **Last 24 hours**: ingest and query volume against the previous 7-day average, p99 latency, errors, the table with the most parts in one partition. Mention only what changed notably.
    - **Success criteria**: one line each - value in the last 24 hours, value over the 7 days before, pass threshold, met / not met / not measurable.

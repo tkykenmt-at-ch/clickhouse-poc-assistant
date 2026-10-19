@@ -28,8 +28,9 @@ cp "$src"/stages/*.md "$out/stages/"
 for f in "$src"/stages/*.md; do
   grep -q "stages/$(basename "$f")" "$src/SKILL.md" || { echo "SKILL.md does not list stages/$(basename "$f")" >&2; exit 1; }
 done
-grep -oE 'stages/[A-Za-z0-9_-]+\.md' "$src/SKILL.md" | sort -u | while read -r s; do
-  [ -f "$src/$s" ] || { echo "SKILL.md names $s, which does not exist" >&2; exit 1; }
+# Stage files named anywhere (SKILL.md, stages, reference files) must exist.
+{ cat "$src/SKILL.md" "$src"/stages/*.md "$ROOT"/reference/*.md | grep -oE 'stages/[A-Za-z0-9_-]+\.md' || true; } | sort -u | while read -r s; do
+  [ -f "$src/$s" ] || { echo "$s is named but does not exist" >&2; exit 1; }
 done
 
 # Ship exactly the files SKILL.md and the stage files name. Reference files can point to other reference files
@@ -48,10 +49,10 @@ for ref in $refs; do
   cp "$ROOT/$ref" "$out/$ref"
 done
 
-# Public skills, unmodified, under vendor/. Every vendor file SKILL.md names must exist.
+# Public skills, unmodified, under vendor/. Every vendor file SKILL.md or a stage names must exist.
 "$ROOT/scripts/fetch-public-skills.sh" "$out/vendor"
-grep -oE 'vendor/[A-Za-z0-9_./-]+\.md' "$src/SKILL.md" | sort -u | while read -r v; do
-  [ -f "$out/$v" ] || { echo "SKILL.md names $v, which the vendored skill does not have" >&2; exit 1; }
+{ cat "$src/SKILL.md" "$src"/stages/*.md | grep -oE 'vendor/[A-Za-z0-9_./-]+\.(md|yaml)' || true; } | sort -u | while read -r v; do
+  [ -f "$out/$v" ] || { echo "$v is named but the vendored skill does not have it" >&2; exit 1; }
 done
 
 # Every core query must be listed by the sizing stage.

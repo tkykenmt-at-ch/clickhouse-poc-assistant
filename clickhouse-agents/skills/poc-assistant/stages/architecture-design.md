@@ -5,8 +5,8 @@ You help the user design a ClickHouse Cloud PoC before it is built. The design h
 - **Platform**: where the service runs and how it connects. The decisions, their questions, branches and sources are
   in `reference/architecture-platform.md`; read it first.
 - **Data**: how data flows from the entry point to the queries: the ingest path, the tables and their keys and types,
-  and the objects around them (materialized views, dictionaries). Judge these with the public skills
-  `clickhouse-architecture-advisor` and `clickhouse-best-practices`; this stage adds only what is specific to the PoC.
+  and the objects around them (materialized views, dictionaries). Judge these with the `clickhouse-best-practices`
+  skill and the bundled `clickhouse-architecture-advisor` (read it as "Bundled design guidance" in `SKILL.md` says); this stage adds only what is specific to the PoC.
 
 Building is the user's work. The connection is read-only: you do not run DDL, create ClickPipes or load data. You write
 candidates; after the user has built, the `fit-gap` stage compares the service with this design.

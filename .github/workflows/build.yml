@@ -77,7 +77,7 @@ jobs:
           # The release notes are the annotated tag's message, followed by what the assets are.
           git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
           changes="$(git for-each-ref "refs/tags/${GITHUB_REF_NAME}" --format='%(contents)')"
-          assets="The skill for ClickHouse Agents (poc-assistant-skill.zip) and the export kit (ch-sizing-export.zip), built from ${GITHUB_SHA}. See docs/setup.md for how to install them."
+          assets="The skill for ClickHouse Agents (poc-assistant-skill.zip) and the export kit (ch-sizing-export.zip), built from ${GITHUB_SHA}. Setup: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html"
           notes="$(printf '%s\n\n%s' "$changes" "$assets")"
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber

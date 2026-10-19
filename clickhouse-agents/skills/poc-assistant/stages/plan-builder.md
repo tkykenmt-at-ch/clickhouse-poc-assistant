@@ -10,7 +10,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 - Give each criterion a scope that the daily note can query the same way every day: the `log_comment` tags, tables or query types it covers. Suggest tagging test traffic with `log_comment` so latency criteria can be measured per tag.
 - Do not recommend a service size, a tier or a price.
 - Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
-- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. The plan file is the exception: keep `Measured by:` and `Scope:` in it as the paragraph after the plan template in step 4 says, because the other skills read them. In your chat answers, write who measures each criterion in the user's language (in Japanese, for example 「system テーブル（日次メモが毎日測る）」「ユーザーのテーブル（承認後に集計）」「Cloud のツール」「ユーザー」).
+- Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. The plan file is the exception: keep `Measured by:` and `Scope:` in it as the paragraph after the plan template in step 4 says, because the other stages read them. In your chat answers, write who measures each criterion in the user's language (in Japanese, for example 「system テーブル（日次メモが毎日測る）」「ユーザーのテーブル（承認後に集計）」「Cloud のツール」「ユーザー」).
 
 ## Steps
 
@@ -40,9 +40,9 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 
 ## Setup
 
-- [x|  ] Remote MCP on the service (<how you know: a query on the service succeeded, or not checked>)
-- [x|  ] Generative AI features on the service (<same>)
-- [x|  ] <server name> MCP server: <URL>, <authentication>; tools <tool names>. Needed for: <criteria or stages>
+- [ ] Remote MCP on the service (<how you know: a query on the service succeeded, or not checked>)
+- [ ] Generative AI features on the service (<same>)
+- [ ] <server name> MCP server: <URL>, <authentication>; tools <tool names>. Needed for: <criteria or stages>
 - Not added: <server name> (<why: for example "no data on Azure">)
 - Guide: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html#optional-mcp-servers
 
@@ -66,7 +66,7 @@ You help the user write a PoC plan for ClickHouse Cloud. The evaluation areas, m
 
 Write `## Setup` from `stages/help.md` ("Adding an MCP server") and from what this conversation shows:
 
-- Mark an item `[x]` only when this conversation shows it: a query on the service succeeded (Remote MCP and
+- Each item starts as `[ ]`. Change it to `[x]` only when this conversation shows it: a query on the service succeeded (Remote MCP and
   Generative AI features), or the server's tools are among the tools you can call. Otherwise leave it `[ ]`.
 - List the servers this PoC needs, as "Recommend only servers the PoC needs" in `stages/help.md` decides: the
   documentation server of the cloud where the data sources and applications run, and the ClickHouse Cloud server
@@ -79,7 +79,7 @@ Write `## Setup` from `stages/help.md` ("Adding an MCP server") and from what th
   between the two pages).
 - Never write a client ID, a secret, a key or a token in the plan.
 
-Write the plan in the user's language. Keep these headings, either in English as above or as their Japanese equivalents (`## 対象`, `## 準備`, `## 成功基準`, `## 結果`, `## 経緯`); translate the other labels inside the sections too, but keep `Measured by:` and its values (`system tables`, `user tables, with approval`, `Cloud tools`, `user`) and `Scope:` in English, because the other skills read them literally. Tell the user that `## Results` is where the daily note's result lines and their own measurements go, so the PoC keeps its history beyond the 30 days that system tables keep.
+Write the plan in the user's language. Keep these headings, either in English as above or as their Japanese equivalents (`## 対象`, `## 準備`, `## 成功基準`, `## 結果`, `## 経緯`); translate the other labels inside the sections too, but keep `Measured by:` and its values (`system tables`, `user tables, with approval`, `Cloud tools`, `user`) and `Scope:` in English, because the other stages read them literally. Tell the user that `## Results` is where the daily note's result lines and their own measurements go, so the PoC keeps its history beyond the 30 days that system tables keep.
 
 5. Add the environment answers to `## Log` as decisions (service, provider and region, release channel, tagging), and
    list any that are not settled yet as open. If `## Setup` has unchecked items, list them for the user with one line

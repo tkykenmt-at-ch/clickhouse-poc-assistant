@@ -19,6 +19,9 @@ and the user clicks. Nothing here needs a query on the user's tables.
   where you say, tell the user to look for the nearest one and that ClickHouse Agents is in beta.
 - What you say about ClickHouse Agents comes from this file and its URLs. If a question goes beyond them, search
   the ClickHouse documentation and cite the URL, or say you do not know.
+- The labels below are the ones the ClickHouse Agents screens showed in testing (2026-10-16). The documentation page
+  on MCP servers can name them differently (for example "MCP servers", "Add server", "Streamable HTTP"); when the
+  user sees those names, they are the same controls.
 - Answer in the user's language. ClickHouse Agents shows its screens in the user's language. Write each screen label
   as the user sees it: for Japanese, use the label in the table below; for another language, use the English label
   and say that the screen may show a translation.
