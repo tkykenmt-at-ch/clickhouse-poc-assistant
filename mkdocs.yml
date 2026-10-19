@@ -4,7 +4,6 @@ site_description: A ClickHouse Agents agent that helps run a ClickHouse Cloud pr
 site_url: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/
 repo_url: https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant
 repo_name: clickhouse-poc-assistant
-edit_uri: edit/main/docs/
 docs_dir: docs
 # Keep the page URLs of the earlier site (setup.html, not setup/).
 use_directory_urls: false

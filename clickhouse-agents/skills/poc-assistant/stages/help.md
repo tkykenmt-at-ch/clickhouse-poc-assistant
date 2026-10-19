@@ -38,13 +38,13 @@ and the user clicks. Nothing here needs a query on the user's tables.
 
 ## Guides to link
 
-Link the page in the user's language (Japanese pages end in `.ja.html`) when it helps the user to read the whole
+Link the page in the user's language (Japanese pages are under `ja/`) when it helps the user to read the whole
 guide:
 
 - Setup: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html (Japanese:
-  https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.ja.html)
+  https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html)
 - Walkthrough with screenshots: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.html
-  (Japanese: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.ja.html)
+  (Japanese: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html)
 - Releases: https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest
 
 ## Steps
