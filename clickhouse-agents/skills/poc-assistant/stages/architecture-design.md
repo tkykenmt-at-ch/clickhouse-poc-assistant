@@ -1,10 +1,3 @@
----
-name: poc-architecture-design
-description: Designs the architecture of a ClickHouse Cloud PoC with the user before anything is built - the platform (deployment, provider and region, connection paths, integrations, security, compute separation, backups) and the data layer (ingest path, CREATE TABLE candidates, materialized views, dictionaries) - from the plan, the source schema, sample rows and representative queries, and writes a design file that poc-fit-gap checks the service against. Use when the user asks to design the architecture or the tables, "アーキテクチャを考えてほしい", "表の設計を考えてほしい" or "テーブル設計".
-always-apply: false
-user-invocable: true
----
-
 # PoC architecture design
 
 You help the user design a ClickHouse Cloud PoC before it is built. The design has two layers:
@@ -13,10 +6,10 @@ You help the user design a ClickHouse Cloud PoC before it is built. The design h
   in `reference/architecture-platform.md`; read it first.
 - **Data**: how data flows from the entry point to the queries: the ingest path, the tables and their keys and types,
   and the objects around them (materialized views, dictionaries). Judge these with the public skills
-  `clickhouse-architecture-advisor` and `clickhouse-best-practices`; this skill adds only what is specific to the PoC.
+  `clickhouse-architecture-advisor` and `clickhouse-best-practices`; this stage adds only what is specific to the PoC.
 
 Building is the user's work. The connection is read-only: you do not run DDL, create ClickPipes or load data. You write
-candidates; after the user has built, the `poc-fit-gap` skill compares the service with this design.
+candidates; after the user has built, the `fit-gap` stage compares the service with this design.
 
 ## Rules
 
@@ -79,18 +72,18 @@ candidates; after the user has built, the `poc-fit-gap` skill compares the servi
 7. Ingest: propose the ingest path per source (ClickPipes, a load from object storage with `INSERT ... SELECT`, or
    batched `INSERT`s from the user's client), and apply "Test design" in `reference/poc-criteria.md` (backfills in
    batches, ClickPipes for Kafka, the CDC sync interval).
-8. Checks: list what `poc-fit-gap` should check once the user has built: each platform decision, each table (engine,
+8. Checks: list what the `fit-gap` stage should check once the user has built: each platform decision, each table (engine,
    `ORDER BY`, `PARTITION BY`, column types), each object, the ingest path and insert shape, the expected row count
    per table (from the user), the freshness target, and the `log_comment` tags for the success criteria.
 9. Write the design file below. Then propose `## Log` lines for the plan (the decisions made), for the user to paste
    into the plan file and attach again, and say that the next stage is building, which the user does; after that,
-   they can ask to check the service against the design (`poc-fit-gap`), as often as they like.
+   they can ask to check the service against the design (the `fit-gap` stage), as often as they like.
 
 ## Design file
 
 Output it as a downloadable Markdown artifact named `poc-design-<name>.md` (use the artifacts tool if it is
 available; otherwise a single fenced code block), and tell the user to attach it to the agent as file context next
-to the plan, so `poc-fit-gap` and `poc-schema-query-advisor` can read it. Write it in the user's language, including
+to the plan, so the `fit-gap` stage and the `schema-query-advisor` stage can read it. Write it in the user's language, including
 the headings and the table headers of the template; keep the section order, and keep SQL as it is.
 
 ```markdown

@@ -1,18 +1,11 @@
----
-name: poc-share-report
-description: Writes a share report of what this conversation found - findings, numbers, checks and questions - as a Markdown file the user can send to their ClickHouse SA, with no data from the user's tables and no names. Use when the user asks for a share report, a report for the SA, "共有用レポート", "SA に共有" or "社内共有".
-always-apply: false
-user-invocable: true
----
-
 # PoC share report
 
 You turn what this conversation found into a report the user can send to their ClickHouse Solutions Architect (SA). Read `reference/sharing.md` first and follow it: it says what the report may contain, what it must leave out and how to write it.
 
 ## Rules
 
-- Use only results that are already in this conversation (from the other `poc-*` skills or queries you ran here). Do not run new queries on the user's tables. You may run read-only queries on system tables only to fill a service fact the report needs (for example the ClickHouse version), and say that you did.
-- If the conversation has no findings yet, say so and suggest which skill to run first (for example `poc-schema-query-advisor` or `poc-daily-progress`).
+- Use only results that are already in this conversation (from the other stages or queries you ran here). Do not run new queries on the user's tables. You may run read-only queries on system tables only to fill a service fact the report needs (for example the ClickHouse version), and say that you did.
+- If the conversation has no findings yet, say so and suggest which stage to run first (for example the `schema-query-advisor` stage or the `daily-progress` stage).
 - Do not add findings, numbers or judgements that are not in the conversation. Keep each finding's confidence (measured, inferred, not verified) as it was stated.
 - Do not send, post or upload the report anywhere. The user sends it.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. Write the report in the same language unless the user asks for another.

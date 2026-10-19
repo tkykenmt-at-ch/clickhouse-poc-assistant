@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Build the distributable zips into dist/:
-#   ch-sizing-export.zip  export kit for users (README in English and Japanese, setup_user.sql, export.sh, queries/)
-#   <skill>-skill.zip     one per directory in clickhouse-agents/skills/, with SKILL.md and
-#                         exactly the files it references (queries/.../*.sql, reference/*.md, tools/*.py)
+#   ch-sizing-export.zip     export kit for users (README in English and Japanese, setup_user.sql, export.sh, queries/)
+#   poc-assistant-skill.zip  the one skill for ClickHouse Agents: SKILL.md, stages/, exactly the files they
+#                            reference (queries/.../*.sql, reference/*.md, tools/*.py), and the public skills it
+#                            bundles under vendor/ (downloaded by fetch-public-skills.sh)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST="$ROOT/dist"; TMP="$(mktemp -d)"
@@ -16,32 +17,49 @@ cp "$ROOT"/queries/*.sql "$kit/queries/"
 cp "$ROOT"/queries/optional/*.sql "$kit/queries/optional/"
 (cd "$TMP" && zip -qr "$DIST/ch-sizing-export.zip" ch-sizing-export)
 
-for dir in "$ROOT"/clickhouse-agents/skills/*/; do
-  name="$(basename "$dir")"
-  out="$TMP/skills/$name"
-  mkdir -p "$out"
-  cp "$dir/SKILL.md" "$ROOT/LICENSE" "$out/"
-  # The agent cannot list folders, so SKILL.md names every file; ship exactly those.
-  refs="$(grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md|tools/[A-Za-z0-9_-]+\.py)' "$dir/SKILL.md" | sort -u)"
-  # Reference files can point to other reference files and to queries; ship those too (until nothing new is found).
-  while :; do
-    more="$(for r in $refs; do case "$r" in reference/*) if [ -f "$ROOT/$r" ]; then grep -oE '(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md|tools/[A-Za-z0-9_-]+\.py)' "$ROOT/$r" || true; fi;; esac; done | sort -u)"
-    all="$(printf '%s\n%s\n' "$refs" "$more" | grep -v '^$' | sort -u)"
-    [ "$all" = "$refs" ] && break
-    refs="$all"
-  done
-  [ -n "$refs" ] || { echo "$name: SKILL.md references no files" >&2; exit 1; }
-  for ref in $refs; do
-    [ -f "$ROOT/$ref" ] || { echo "$name: $ref does not exist" >&2; exit 1; }
-    mkdir -p "$out/$(dirname "$ref")"
-    cp "$ROOT/$ref" "$out/$ref"
-  done
-  (cd "$TMP/skills" && zip -qr "$DIST/$name-skill.zip" "$name")
+name=poc-assistant
+src="$ROOT/clickhouse-agents/skills/$name"
+out="$TMP/skills/$name"
+mkdir -p "$out/stages"
+cp "$src/SKILL.md" "$ROOT/LICENSE" "$out/"
+cp "$src"/stages/*.md "$out/stages/"
+
+# The agent cannot list folders, so SKILL.md names every stage file, and every stage file is listed there.
+for f in "$src"/stages/*.md; do
+  grep -q "stages/$(basename "$f")" "$src/SKILL.md" || { echo "SKILL.md does not list stages/$(basename "$f")" >&2; exit 1; }
+done
+grep -oE 'stages/[A-Za-z0-9_-]+\.md' "$src/SKILL.md" | sort -u | while read -r s; do
+  [ -f "$src/$s" ] || { echo "SKILL.md names $s, which does not exist" >&2; exit 1; }
 done
 
-# Every core query must be listed by the sizing skill.
-for f in "$ROOT"/queries/*.sql; do
-  grep -q "queries/$(basename "$f")" "$ROOT/clickhouse-agents/skills/poc-sizing-stats/SKILL.md" \
-    || { echo "poc-sizing-stats does not list queries/$(basename "$f")" >&2; exit 1; }
+# Ship exactly the files SKILL.md and the stage files name. Reference files can point to other reference files
+# and to queries; ship those too (until nothing new is found).
+pat='(queries/[A-Za-z0-9_/]+\.sql|reference/[A-Za-z0-9_-]+\.md|tools/[A-Za-z0-9_-]+\.py)'
+refs="$(cat "$src/SKILL.md" "$src"/stages/*.md | grep -oE "$pat" | sort -u)"
+while :; do
+  more="$(for r in $refs; do case "$r" in reference/*) if [ -f "$ROOT/$r" ]; then grep -oE "$pat" "$ROOT/$r" || true; fi;; esac; done | sort -u)"
+  all="$(printf '%s\n%s\n' "$refs" "$more" | grep -v '^$' | sort -u)"
+  [ "$all" = "$refs" ] && break
+  refs="$all"
 done
+for ref in $refs; do
+  [ -f "$ROOT/$ref" ] || { echo "$ref does not exist" >&2; exit 1; }
+  mkdir -p "$out/$(dirname "$ref")"
+  cp "$ROOT/$ref" "$out/$ref"
+done
+
+# Public skills, unmodified, under vendor/. Every vendor file SKILL.md names must exist.
+"$ROOT/scripts/fetch-public-skills.sh" "$out/vendor"
+grep -oE 'vendor/[A-Za-z0-9_./-]+\.md' "$src/SKILL.md" | sort -u | while read -r v; do
+  [ -f "$out/$v" ] || { echo "SKILL.md names $v, which the vendored skill does not have" >&2; exit 1; }
+done
+
+# Every core query must be listed by the sizing stage.
+for f in "$ROOT"/queries/*.sql; do
+  grep -q "queries/$(basename "$f")" "$src/stages/sizing-stats.md" \
+    || { echo "stages/sizing-stats.md does not list queries/$(basename "$f")" >&2; exit 1; }
+done
+
+(cd "$TMP/skills" && zip -qr "$DIST/$name-skill.zip" "$name")
+unzip -l "$DIST/$name-skill.zip" | tail -1
 ls -l "$DIST"

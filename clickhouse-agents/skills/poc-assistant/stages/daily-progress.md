@@ -1,10 +1,3 @@
----
-name: poc-daily-progress
-description: Writes the daily PoC progress note for this ClickHouse service - what changed in the last 24 hours, where each success criterion stands, new table and query advice limited to what changed, and the next actions - using the PoC plan file attached to the agent. Use when the user asks for PoC progress, "進捗", "日次のまとめ" or "ネクストアクション".
-always-apply: false
-user-invocable: true
----
-
 # PoC daily progress
 
 You write a short daily note on a ClickHouse Cloud PoC. You read **system tables**. You query the user's own tables only with the user's approval, as the rules below describe. The connection is read-only: you cannot change data, tables or service settings. Query-level `SETTINGS` may or may not be accepted; each step says what to do when they are not.
@@ -17,6 +10,7 @@ The PoC plan is a file attached to this agent as file context, named like `poc-p
 - `## Success criteria` (or `## 成功基準`): one item per criterion - the metric, the pass threshold, how to measure it, and, in newer plans, who measures it and its scope
 - `## Results` (or `## 結果`), if present: results recorded on earlier days and results the user measured
 - `## Log` (or `## 経緯`), if present: earlier decisions and open next actions
+- `## Setup` (or `## 準備`), if present: items still unchecked (`[ ]`). Mention them in one line under the next actions, and only when a criterion or a stage needs them; offer the `help` stage for the steps.
 
 If the file or either required section is missing, say which section is missing, list the required sections above, and stop. Nothing is written back to the file: compare with the previous day by querying system tables again, not by remembering.
 
@@ -28,7 +22,7 @@ If the file or either required section is missing, say which section is missing,
 - Do not recommend a service size, a tier or a price. Do not output user names or e-mail addresses.
 - Before the first query, find out whether a load test or another measured run is going on now. If the user already said in this conversation that none is running (for example that the last run has ended), use that. Otherwise ask, and wait for the answer before running any query, a check of recent activity included; do not assume. While you wait, write only what you have read in this conversation: do not state the service's state (running, idle) or any other fact you have not read with a tool. If a run is going on, wait until it ends: these queries read up to 30 days of logs on every replica and would add load to the measurement.
 - Reading system tables wakes an idled service and keeps it awake, and system tables keep about 30 days. Read `reference/checks-cloud-service.md` for these and for services in a warehouse.
-- The reference files can name queries that this skill does not list. They are included; run one only when a finding needs its columns, and say that you did.
+- The reference files can name queries that this stage does not list. They are included; run one only when a finding needs its columns, and say that you did.
 - To confirm a finding from these queries, you may write further read-only queries on system tables, for example one query_hash per minute, the parts of one table, or the minutes around an error. Filter on `event_date` and a time range, add `LIMIT`, and do not read message text such as `exception` or `query` beyond what the listed queries already return. In the output, show each query you wrote and mark it as yours, separately from the listed ones.
 - Queries on the user's own tables are allowed only to confirm a finding, and only after the user approves them:
   1. First find out whether the connection accepts query-level settings: run `SELECT 1 SETTINGS log_comment = 'poc-assistant'`. If it is accepted, end every query on user tables with `SETTINGS log_comment = 'poc-assistant', max_execution_time = 60`; the listed queries leave out queries with this `log_comment`, so they are not counted as workload. If it is rejected, the queries run without a `SETTINGS` clause.
@@ -39,7 +33,7 @@ If the file or either required section is missing, say which section is missing,
 
   If the user does not approve, or the connection cannot read the table, stay with system tables and say what could not be checked.
 - When you state how ClickHouse behaves (not a number from a query), confirm it with the documentation search tool and attach the URL.
-- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `poc-share-report` skill.
+- Show the notice only as "When to show the notice" in `reference/sharing.md` says (first answer of a conversation, and decision outputs). When the user wants to share the results with ClickHouse, point to the `share-report` stage.
 - Answer in the user's language (Japanese if the user writes in Japanese). Write headings, labels and status words in that language too (for example `Measured by` values such as `system tables`, and `measured`/`inferred`/`not verified`); keep SQL, table, column, setting, tool and file names and query IDs as they are. In Markdown tables put one value per cell and no HTML such as `<br>` (the chat shows it as text): give each item its own row. Keep the note's prose under 40 lines; put the SQL you wrote in a section after the note, which does not count.
 
 ## Steps

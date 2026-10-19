@@ -8,11 +8,14 @@ ClickHouse Agents（ベータ）を使える ClickHouse Cloud の組織と、評
 ## 手順の一覧
 
 1. サービスで Remote MCP を有効にする（[1](#1-サービスで-remote-mcp-を有効にする)）
-2. スキルの zip をダウンロードする（[2](#2-スキルをダウンロードする)）
-3. zip を 1 つずつスキルとしてアップロードする（[3](#3-スキルをアップロードする)）
+2. `poc-assistant-skill.zip` をダウンロードする（[2](#2-スキルをダウンロードする)）
+3. zip をスキルとしてアップロードする（[3](#3-スキルをアップロードする)）
 4. エージェントを作り、指示文を貼る（[4](#4-エージェントを作る)）
 5. エージェントと PoC の計画を作り、エージェントに添付する（[5](#5-poc-の計画を作って添付する)）
 6. 設計、設計との照合、統計、見直し、日次のまとめを頼む（[6](#6-使う)）
+
+エージェントを作ったあとの設定は、エージェント自身が案内します。
+「何ができますか」「MCP サーバーの足し方を教えて」と聞いてください。
 
 ## 1. サービスで Remote MCP を有効にする
 
@@ -30,28 +33,14 @@ Remote MCP はサービスごとに有効にします。
 
 ## 2. スキルをダウンロードする
 
-最新のリリースから 1 つずつダウンロードします。
-
-| スキル | ダウンロード |
-|---|---|
-| `poc-plan-builder` | [poc-plan-builder-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-plan-builder-skill.zip) |
-| `poc-architecture-design` | [poc-architecture-design-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-architecture-design-skill.zip) |
-| `poc-fit-gap` | [poc-fit-gap-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-fit-gap-skill.zip) |
-| `poc-sizing-stats` | [poc-sizing-stats-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-sizing-stats-skill.zip) |
-| `poc-schema-query-advisor` | [poc-schema-query-advisor-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-schema-query-advisor-skill.zip) |
-| `poc-load-test-review` | [poc-load-test-review-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-load-test-review-skill.zip) |
-| `poc-daily-progress` | [poc-daily-progress-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-daily-progress-skill.zip) |
-| `poc-summary` | [poc-summary-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-summary-skill.zip) |
-| `poc-cost-projection` | [poc-cost-projection-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-cost-projection-skill.zip) |
-| `poc-share-report` | [poc-share-report-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-share-report-skill.zip) |
-| `clickhouse-architecture-advisor`（公開スキル、変更なし） | [clickhouse-architecture-advisor-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/clickhouse-architecture-advisor-skill.zip) |
-
-全部まとめた [poc-assistant-skills.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skills.zip) もあります（展開すると上の表の zip が出てきます）。GitHub CLI なら次の 1 行です。
+最新のリリースから [poc-assistant-skill.zip](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest/download/poc-assistant-skill.zip) をダウンロードします。
+GitHub CLI なら次の 1 行です。
 
 ```bash
-gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
+gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p poc-assistant-skill.zip
 ```
 
+PoC の段ごとの手順を 1 つにまとめたスキルで、公開スキル `clickhouse-architecture-advisor`（[ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills)、Apache-2.0、変更なし）も同梱しています。
 `clickhouse-best-practices` は ClickHouse Agents に組み込まれているので、ダウンロードは不要です。
 リリースにある `ch-sizing-export.zip` は、ユーザーが自分でクエリを実行するための一式で、エージェントには使いません。
 ソースから zip を作る場合は、[開発者向けの作り方](development.ja.md#作り方)を見てください。
@@ -60,8 +49,8 @@ gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
 
 1. Cloud コンソールの左のメニューから **ClickHouse agents** を開きます。
 2. ClickHouse Agents の左のバーで **スキル** を開きます。
-3. zip ごとに、**スキルを作成**（＋）→ **スキルをアップロードする** → zip を選びます。1 回のアップロードで入るスキルは 1 つです。
-4. 上の表のスキルがすべて一覧に並んだことを確かめます。
+3. **スキルを作成**（＋）→ **スキルをアップロードする** → `poc-assistant-skill.zip` を選びます。
+4. 一覧に `poc-assistant` が並んだことを確かめます。
 
 参考：https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/builder/skills
 
@@ -76,40 +65,44 @@ gh release download -R tkykenmt-at-ch/clickhouse-poc-assistant -p '*-skill.zip'
 | モデル | プロバイダー **Claude**、モデル `claude-sonnet-5-5`（一覧にあるほかのモデルでも動くはずですが、検証したのはこのモデルです） |
 | 指示文 | 下の英語の文 |
 | ツール | **ツールを追加** → **ClickHouse**（MCP サーバー）、**アーティファクト**、**コードインタープリター** |
-| スキル | **Selected** にして、`poc-*` のスキルすべて、`clickhouse-best-practices`、`clickhouse-architecture-advisor` を追加 |
+| スキル | **Selected** にして、`poc-assistant` と `clickhouse-best-practices` を追加 |
 
 指示文には、次の英語の文を貼ります。エージェントはユーザーの言葉で答えます。
 
 ```text
-You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for each request: poc-plan-builder to plan the PoC and its success criteria, poc-architecture-design to design the platform and the tables before the user builds them (from the plan, the source schema, sample rows and representative queries), poc-fit-gap to check the service against the design while or after the user builds it and say what to do next, poc-sizing-stats for sizing statistics, poc-schema-query-advisor to review table design and queries (judge with clickhouse-best-practices and clickhouse-architecture-advisor), poc-load-test-review to explain one load test (latency, CPU, reads, autoscaling) or compare two runs, poc-daily-progress for progress, the daily note and next actions, poc-summary for a weekly or final PoC summary, poc-cost-projection for a list-price cost projection from the user's production assumptions, and poc-share-report for a report the user can send to their ClickHouse SA. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) and the design in the design file (a file starting with poc-design), both in the file context. The user builds the service, tables and ingest; you do not run DDL or loads. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Present improvements as candidates to verify, not as decisions. Once per conversation, and at the end of a summary, cost projection or share report, add one line saying the assistant can make mistakes and findings should be checked with the ClickHouse SA. Answer in the user's language.
+You are an assistant that helps run a ClickHouse Cloud PoC. For every request, load the poc-assistant skill first and follow the stage it points to; this includes questions about what you can do and how to set up or use this agent. The PoC target and success criteria are in the PoC plan file (a file starting with poc-plan) and the design in the design file (a file starting with poc-design), both in the file context. The user builds the service, tables and ingest; you do not run DDL or loads. For every request, read system tables. Query the user's own tables only to confirm a finding, after showing the queries with their EXPLAIN ESTIMATE and getting the user's approval; return aggregates, not rows. Write numbers only from query results; do not guess. When you state how ClickHouse behaves, confirm it with documentation search and attach the URL. Do not recommend a service size, a tier or a price; a cost projection uses the user's assumptions and is not a quote. Do not output user names or e-mail addresses. Never ask for or accept passwords, API keys, client secrets or tokens. Present improvements as candidates to verify, not as decisions. Once per conversation, and at the end of a summary, cost projection or share report, add one line saying the assistant can make mistakes and findings should be checked with the ClickHouse SA. Answer in the user's language.
 ```
 
 <details>
 <summary>指示文の日本語訳（参考。貼るのは上の英語の文）</summary>
 
-あなたは ClickHouse Cloud の PoC を手伝うアシスタントです。依頼に応じてスキルを使い分けます。PoC の計画と成功基準づくりは poc-plan-builder、ユーザーが構築する前の基盤と表の設計（計画、移行元のスキーマ、サンプル行、代表的なクエリから）は poc-architecture-design、構築の途中や後にサービスを設計と照らし合わせて次の一手を出すのは poc-fit-gap、サイジング用の統計は poc-sizing-stats、テーブル設計とクエリの見直しは poc-schema-query-advisor（判断は clickhouse-best-practices と clickhouse-architecture-advisor に従う）、1 回の負荷試験の振り返り（レイテンシ、CPU、読み取り、オートスケール）と変更前後の比較は poc-load-test-review、進捗と日次のまとめとネクストアクションは poc-daily-progress、週次と最終の PoC のまとめは poc-summary、ユーザーが決めた本番の前提からの定価ベースの費用試算は poc-cost-projection、ClickHouse の担当 SA に送る共有用レポートは poc-share-report です。PoC の対象と成功基準は PoC 計画（poc-plan で始まるファイル）に、設計は設計ファイル（poc-design で始まるファイル）に書いてあり、どちらもファイルのコンテキストにあります。サービス、表、流し込みはユーザーが構築します。DDL や流し込みは実行しません。どの依頼でも、system テーブルを読みます。ユーザーのテーブルにクエリを流すのは、見つけたことを確かめるときだけで、クエリと EXPLAIN ESTIMATE の見込みを示してユーザーの了承を得てからにします。返すのは集計で、行そのものは返しません。数字はクエリの結果だけから書き、推測しません。ClickHouse の振る舞いを述べるときは、ドキュメント検索で確かめて URL を付けます。サービスの規模、ティア、金額の推奨はしません。費用試算はユーザーが決めた前提で計算するもので、見積もりではありません。アシスタントは誤ることがあるので必要に応じて担当 SA に確認してほしい旨を、会話の最初の回答と、まとめ・費用試算・共有用レポートの最後に 1 行だけ添えます。ユーザー名やメールアドレスは出しません。改善の案は、決定ではなく確かめる候補として出します。ユーザーの言葉で答えます。
+あなたは ClickHouse Cloud の PoC を手伝うアシスタントです。どの依頼でも、まず poc-assistant スキルを読み込み、そこが示す段の手順に従います。何ができるか、このエージェントの設定や使い方についての質問も同じです。PoC の対象と成功基準は PoC 計画（poc-plan で始まるファイル）に、設計は設計ファイル（poc-design で始まるファイル）に書いてあり、どちらもファイルのコンテキストにあります。サービス、表、流し込みはユーザーが構築します。DDL や流し込みは実行しません。どの依頼でも、system テーブルを読みます。ユーザーのテーブルにクエリを流すのは、見つけたことを確かめるときだけで、クエリと EXPLAIN ESTIMATE の見込みを示してユーザーの了承を得てからにします。返すのは集計で、行そのものは返しません。数字はクエリの結果だけから書き、推測しません。ClickHouse の振る舞いを述べるときは、ドキュメント検索で確かめて URL を付けます。サービスの規模、ティア、金額の推奨はしません。費用試算はユーザーが決めた前提で計算するもので、見積もりではありません。ユーザー名やメールアドレスは出しません。パスワード、API キー、クライアントシークレット、トークンを求めたり受け取ったりしません。改善の案は、決定ではなく確かめる候補として出します。アシスタントは誤ることがあるので担当 SA に確認してほしい旨を、会話の最初の回答と、まとめ・費用試算・共有用レポートの最後に 1 行だけ添えます。ユーザーの言葉で答えます。
 
 </details>
 
-ツールはこの 3 つだけにします。コードインタープリターは、`poc-cost-projection` が同梱のスクリプトを動かすのに使います。検証ではそのサンドボックスからネットワークに出られなかったので、スキルは同梱している価格表の写し（毎日更新）を読みます。ほかの MCP サーバー（たとえば ClickStack）のツールを足すと、そのサーバーにもサインインするまで、どのチャットも先へ進みません。チャットはこのエージェントで始めます。組み込みの ClickHouse Agent はスキルが Off になっています。正しく設定できていれば、回答の最初に `poc-*` のスキルを読み込む表示が出ます。
+ツールはこの 3 つだけにします。
+コードインタープリターは、費用試算の段が同梱のスクリプトを動かすのに使います。
+検証ではそのサンドボックスからネットワークに出られなかったので、スキルは同梱している価格表の写し（毎日更新）を読みます。
+チャットはこのエージェントで始めます。
+組み込みの ClickHouse Agent はスキルが Off になっています。
+正しく設定できていれば、回答の最初に `poc-assistant` を読み込む表示が出ます。
 
 **作成** を押します。あとで変えるときは **保存** を押し、「正常に更新されました」の表示が出るまで待ってください。表示を待たないと、変更が消えることがあります。
 
 初めて ClickHouse のツールを使うときに、接続を求められます。求められない場合は、左のバーの **MCP設定** で **ClickHouse** を探し、**接続** を押します。エージェントから見えるのは、Cloud のユーザーがアクセスできる組織とサービスだけです。
 
-任意の設定として、費用、tier、バックアップ、ClickPipes も読ませられます。Agents に組み込みの **ClickHouse** サーバーには、これらを読む Cloud のツール（`get_organization_cost`、`list_service_backups`、`list_clickpipes` など）がありません。エージェントに読ませるには、**MCP設定** で ClickHouse Cloud のリモート MCP サーバーを自分のサーバーとして足します（URL は `https://mcp.clickhouse.cloud/mcp`、**ストリーミング可能なHTTPS**、OAuth でサインイン）。そのうえで、そのサーバーの次のツールをエージェントに足します：`get_organizations`、`get_services_list`、`get_service_details`、`get_organization_cost`、`list_service_backups`、`get_service_backup_configuration`、`list_clickpipes`、`get_clickpipe`。クエリ用のツールは組み込みのものと重なるので、足さなくてかまいません。ほかのサーバーと同じく、足すとそのサーバーにサインインするまで、どのチャットも先へ進みません。足さない場合は、これらについて Cloud コンソールを案内します。
+### 任意で足す MCP サーバー
 
-任意の設定として、クラウドプロバイダのドキュメントも引けるようにできます。設計の段（`poc-architecture-design`）では、プライベート接続、リージョンごとの提供状況、データ源側の IAM など、プロバイダ側の事実が要ります。プロバイダごとに公式のドキュメントの MCP サーバーがあり、上の Cloud のサーバーと同じ手順で足せます。既定では足しません。PoC が設計の段に入るときに、PoC で使うクラウドの 1 つだけを足します。サーバーを足すたびに、エージェントの検索の文の送り先が増え、関係のないプロバイダの道具は迷いのもとになるからです。足さない場合は、エージェントがプロバイダのドキュメントの URL を案内します。
+あとから足せるサーバーは 2 種類あり、どちらもエージェントに聞けば手順を案内します（たとえば「AWS のドキュメントを引けるようにしたい」）。
+案内に使う手順と値は [stages/help.md](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/blob/main/clickhouse-agents/skills/poc-assistant/stages/help.md#adding-an-mcp-server) にあります。
 
-| プロバイダ | **MCP設定** に入れる URL | 認証 | エージェントに足すツール | Agents での確認（2026-10-16） |
-|---|---|---|---|---|
-| [AWS Knowledge MCP Server](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server) | `https://knowledge-mcp.global.api.aws` | なし（レート制限あり） | `aws___search_documentation`、`aws___read_documentation`、`aws___list_regions`、`aws___get_regional_availability` | **認証なし** で足せた。チャットはサインインを待たなかった |
-| [Microsoft Learn MCP Server](https://learn.microsoft.com/ja-jp/training/support/mcp) | `https://learn.microsoft.com/api/mcp` | なし（Microsoft Learn の利用規約への同意が前提） | `microsoft_docs_search`、`microsoft_docs_fetch`、`microsoft_code_sample_search` | **認証なし** で足せた。チャットはサインインを待たなかった |
-| [Google Developer Knowledge MCP](https://developers.google.com/knowledge/mcp) | `https://developerknowledge.googleapis.com/mcp` | 自分の Google Cloud プロジェクトの OAuth 2.0 クライアント ID | `search_documents`、`get_documents`、`answer_query` | 未確認（OAuth クライアントが要る） |
+- **ClickHouse Cloud のリモート MCP**（`https://mcp.clickhouse.cloud/mcp`、OAuth）：費用、tier、バックアップ、ClickPipes を読めるようになります。組み込みの **ClickHouse** サーバーにはこれらを読むツールがありません。足さない場合は、エージェントが Cloud コンソールを案内します。
+- **クラウドプロバイダのドキュメント**（AWS Knowledge、Microsoft Learn、Google Developer Knowledge）：プライベート接続、リージョンごとの提供状況、データ源側の IAM など、設計の段で要るプロバイダ側の事実を調べられます。足すのは PoC で使うクラウドの 1 つだけです。足さない場合は、エージェントがプロバイダのドキュメントの URL を案内します。Google のサーバーは自分の Google Cloud プロジェクトの OAuth クライアントが要り、ClickHouse Agents ではまだ確かめていません。
 
-- **足し方**：**MCP設定** → **MCPの追加** で、名前、URL、**ストリーミング可能なHTTPS**、上の表の認証を入れ、**このアプリケーションを信頼している** にチェックして **MCPサーバーの作成** を押します。そのあと、エージェントビルダーでそのサーバーのツールをエージェントに足し、**保存** を押します。使わないツールは足しません。
-- **Google**：Google のリモート MCP サーバーはクライアントの自動登録（DCR）に対応していないので、先に自分のプロジェクトで OAuth クライアントを作ります。Developer Knowledge API（`developerknowledge.googleapis.com`）を有効にし、同意画面（ブランディング、対象、テストユーザー）を設定して、種類 **ウェブ アプリケーション** のクライアントを、リダイレクト URI `https://ai.clickhouse.cloud/api/mcp/<サーバー名>/oauth/callback` で作ります（LibreChat のドキュメントにあるコールバックの道筋で、Agents ではまだ確かめていません）。**MCP設定** では **OAuth** を選び、クライアント ID とシークレットを入れます。Google のページでは、この方式の範囲は `https://www.googleapis.com/auth/devprofiles.full_control` で、要求はクライアントを持つプロジェクトに付くのでプロジェクトのヘッダーは要らない、とされています。API キーは使いません。固定の鍵が Agents の設定に残るからです。クライアント ID とシークレットは、リポジトリにも指示文にも入れません。
-- **送られる内容**：検索の文はプロバイダに送られます。スキルが送るのは一般的な問い（プロバイダのサービス名、リージョン、機能名）だけで、会社名、テーブル名・列名、データの値、アカウント ID、サービス名は入れません。
+サーバーを足すたびに、エージェントの検索の文の送り先が増えます。
+エージェントが送るのは一般的な問い（プロバイダのサービス名、リージョン、機能名）だけで、会社名、テーブル名・列名、データの値、アカウント ID、サービス名は入れません。
+サインインが要るサーバーを足すと、そのサーバーにサインインするまで、どのチャットも先へ進みません。
+資格情報は **MCP設定** にだけ入れます。クライアント ID とシークレットは、チャットにも、リポジトリにも、指示文にも入れません。
 
 クエリは、この接続自身による system テーブルの読み取りを除きますが、同じ DB ユーザーのほかのクエリは残します。PoC の負荷をエージェントや書き出しと同じ DB ユーザーで流しても、負荷は数えられます。エージェントがユーザーのテーブルに流すクエリには `log_comment = 'poc-assistant'` を付けるので、数えられません。接続が設定を変えられないときは数えられ、エージェントがそのことを書きます。
 
@@ -126,31 +119,35 @@ You are an assistant that helps run a ClickHouse Cloud PoC. Pick the skill for e
 
 ## 6. 使う
 
-| 頼み方 | スキル |
+| 頼み方 | 段 |
 |---|---|
-| 「PoC のアーキテクチャと表の設計を考えてください。移行元のスキーマ、サンプル行、主なクエリはこれです」 | `poc-architecture-design` |
-| 「表を作りました。設計どおりにできているか見て、次に何をすればいいか教えてください」 | `poc-fit-gap` |
-| 「直近 7 日のサイジング用の統計を出してください」 | `poc-sizing-stats` |
-| 「PoC 計画のサービスのテーブル設計とクエリを、直近 7 日の記録で見直してください」 | `poc-schema-query-advisor` |
-| 「今日の 10:00〜10:20（JST）の負荷試験を振り返ってください。Locust で利用者 10、25、50、100 人の段階です」 | `poc-load-test-review` |
-| 「poc-daily-progress で今日の PoC のまとめを書いてください」 | `poc-daily-progress` |
-| 「今日の 10:00〜10:20 と 14:00〜14:20（JST）の負荷試験を比べてください。間で並び替えのキーを変えました」 | `poc-load-test-review` |
-| 「今週のレビュー用に PoC のまとめを書いてください」 | `poc-summary` |
-| 「本番の月額費用を試算してください。Enterprise、AWS ap-northeast-1、2 レプリカ × 32 GiB、24 時間稼働、圧縮後 5 TB」 | `poc-cost-projection` |
-| 「今日わかったことを、担当 SA に送る共有用レポートにしてください」 | `poc-share-report` |
+| 「何ができますか」「MCP サーバーの足し方を教えて」 | `help` |
+| 「PoC のアーキテクチャと表の設計を考えてください。移行元のスキーマ、サンプル行、主なクエリはこれです」 | `architecture-design` |
+| 「表を作りました。設計どおりにできているか見て、次に何をすればいいか教えてください」 | `fit-gap` |
+| 「直近 7 日のサイジング用の統計を出してください」 | `sizing-stats` |
+| 「PoC 計画のサービスのテーブル設計とクエリを、直近 7 日の記録で見直してください」 | `schema-query-advisor` |
+| 「今日の 10:00〜10:20（JST）の負荷試験を振り返ってください。Locust で利用者 10、25、50、100 人の段階です」 | `load-test-review` |
+| 「今日の PoC のまとめを書いてください」 | `daily-progress` |
+| 「今日の 10:00〜10:20 と 14:00〜14:20（JST）の負荷試験を比べてください。間で並び替えのキーを変えました」 | `load-test-review` |
+| 「今週のレビュー用に PoC のまとめを書いてください」 | `summary` |
+| 「本番の月額費用を試算してください。Enterprise、AWS ap-northeast-1、2 レプリカ × 32 GiB、24 時間稼働、圧縮後 5 TB」 | `cost-projection` |
+| 「今日わかったことを、担当 SA に送る共有用レポートにしてください」 | `share-report` |
 
-日次のまとめは毎朝（出てくる結果の行は計画の `## 結果` に貼ります）、総点検と `poc-summary` は週に 1 回、最後にもう一度 `poc-summary` を目安にします。
+日次のまとめは毎朝（出てくる結果の行は計画の `## 結果` に貼ります）、総点検と全体のまとめは週に 1 回、最後にもう一度全体のまとめを目安にします。
 
 画面つきで 1 件の PoC を最後まで追った例は、[通しの手順](walkthrough.ja.md)にあります。
 
 ## 新しいリリースへの入れ替え
 
-スキルはその場で差し替えられず、スキルを削除するとエージェントからも外れます。変わったスキルごとに、次の順で入れ替えます。
+スキルはその場で差し替えられず、スキルを削除するとエージェントからも外れます。次の順で入れ替えます。
 
-1. 新しい zip をダウンロードします。
-2. **スキル** でそのスキルを開いて削除します。
+1. 新しい `poc-assistant-skill.zip` をダウンロードします。
+2. **スキル** で `poc-assistant` を開いて削除します。同じ名前のスキルが残っていると、アップロードは失敗します。
 3. 新しい zip をアップロードします。
-4. エージェントビルダーでエージェントを開き、**スキル** にもう一度追加して **保存** を押します。「正常に更新されました」の表示を待ちます。
+4. エージェントビルダーでエージェントを開き、**スキル** に `poc-assistant` をもう一度追加して **保存** を押します。「正常に更新されました」の表示を待ちます。
+
+v0.5.0 以前から移るときは、`poc-*` の 10 個のスキルと `clickhouse-architecture-advisor` を削除し、`poc-assistant-skill.zip` をアップロードします。
+そのうえで、エージェントの指示文を[4](#4-エージェントを作る)の文に差し替え、**スキル** で `poc-assistant` と `clickhouse-best-practices` を選びます。
 
 ## 制約（2026-10-08 時点）
 
