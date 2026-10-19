@@ -55,9 +55,9 @@ plugins:
           build: true
           nav_translations:
             Home: ホーム
-            Setup: セットアップ
+            Setup: 導入の手順
             Walkthrough: 通しの手順
-            Development: 開発
+            Development: 開発者向け
 
 nav:
   - Home: index.md
