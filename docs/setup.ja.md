@@ -94,7 +94,7 @@ You are an assistant that helps run a ClickHouse Cloud PoC. For every request, l
 案内に使う手順と値は [stages/help.md](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/blob/main/clickhouse-agents/skills/poc-assistant/stages/help.md#adding-an-mcp-server) にあります。
 
 - ClickHouse Cloud のリモート MCP（`https://mcp.clickhouse.cloud/mcp`、OAuth）：費用、tier、バックアップ、ClickPipes を読めるようになります。組み込みの **ClickHouse** サーバーにはこれらを読むツールがありません。足さない場合は、エージェントが Cloud コンソールを案内します。
-- クラウドプロバイダのドキュメント（AWS Knowledge、Microsoft Learn、Google Developer Knowledge）：プライベート接続、リージョンごとの提供状況、データ源側の IAM など、設計の段で要るプロバイダ側の事実を調べられます。足すのは PoC で使うクラウドの 1 つだけです。足さない場合は、エージェントがプロバイダのドキュメントの URL を案内します。Google のサーバーは自分の Google Cloud プロジェクトの OAuth クライアントが要り、ClickHouse Agents ではまだ確かめていません。
+- クラウドプロバイダのドキュメント（AWS Knowledge、Microsoft Learn、Google Developer Knowledge）：プライベート接続、リージョンごとの提供状況、データ源側の IAM など、設計の段で要るプロバイダ側の事実を調べられます。足すのは PoC で使うクラウドの 1 つだけです。足さない場合は、エージェントがプロバイダのドキュメントの URL を案内します。Google のサーバーには、自分の Google Cloud プロジェクトで作った API キーが要ります。キーは Developer Knowledge API だけに使えるよう制限し、`X-Goog-Api-Key` ヘッダーで渡します。ClickHouse Agents ではまだ確かめていません。
 
 サーバーを足すたびに、エージェントの検索の文の送り先が増えます。
 エージェントが送るのは一般的な問い（プロバイダのサービス名、リージョン、機能名）だけで、会社名、テーブル名・列名、データの値、アカウント ID、サービス名は入れません。
