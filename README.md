@@ -1,5 +1,7 @@
 <div align="center">
 
+**English** | [日本語](README.ja.md)
+
 # PoC Assistant
 
 **powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
@@ -11,7 +13,7 @@ The agent reads your service's system tables and the official documentation,<br>
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-[Get started](#get-started) · [Walkthrough](docs/walkthrough.md) · [Setup guide](docs/setup.md) · [Docs site](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/) · [日本語](README.ja.md)
+**[Documentation](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.html)**
 
 <img src="docs/images/en/1-request.png" alt="A request in plain words, and the skill the agent picked" width="760">
 
@@ -70,7 +72,7 @@ flowchart LR
     A -. "Cloud remote MCP" .-> C
 ```
 
-The Cloud tools are optional: ask the agent how to add the ClickHouse Cloud remote MCP server ([docs/setup.md](docs/setup.md#optional-mcp-servers)). Without it, the agent points to the Cloud console for cost, backups and ClickPipes.
+The Cloud tools are optional: ask the agent how to add the ClickHouse Cloud remote MCP server ([setup guide](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html#optional-mcp-servers)). Without it, the agent points to the Cloud console for cost, backups and ClickPipes.
 
 ## What you get
 
@@ -95,7 +97,7 @@ Every answer shows the numbers and the query or documentation page behind them.
 </table>
 
 > [!TIP]
-> The [walkthrough](docs/walkthrough.md) follows one PoC on synthetic data through every step, from the plan to the share report.
+> The [walkthrough](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.html) follows one PoC on synthetic data through every step, from the plan to the share report.
 
 ## Guardrails
 
@@ -113,16 +115,16 @@ Every answer shows the numbers and the query or documentation page behind them.
 2. **Create the agent**: upload `poc-assistant-skill.zip` from the [latest release](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest) and create the agent.
 3. **Ask for a plan**: and attach the plan file to the agent.
 
-Step by step: **[docs/setup.md](docs/setup.md)**
+Step by step: [setup guide](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html)
 
 ## Status
 
 - Since v0.6.0 the agent is one skill (`poc-assistant`) with a file per stage. In ClickHouse Agents (2026-10-19), requests in English and Japanese loaded the right stage for the plan (with its new `## Setup` section), the design with the bundled `clickhouse-architecture-advisor` rules, the check against the design, the cost projection and the help stage (what the agent can do, adding the AWS and Google documentation servers, and a pasted secret, which it did not use or repeat). The earlier stages were not rerun after the move; their text did not change apart from stage names and, in the daily note and the summary, one line on unchecked `## Setup` items.
-- The whole flow, from plan through design, build and check to share report, was run in ClickHouse Agents in English and Japanese on a test service with synthetic data (2026-10-17); the build was done with `clickhouse-client`, with two deliberate mistakes that the check found; see the [walkthrough](docs/walkthrough.md).
+- The whole flow, from plan through design, build and check to share report, was run in ClickHouse Agents in English and Japanese on a test service with synthetic data (2026-10-17); the build was done with `clickhouse-client`, with two deliberate mistakes that the check found; see the [walkthrough](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.html).
 - All queries pass on ClickHouse 26.7 and 26.8 as a least-privilege user (`scripts/test-queries.sh`, run by CI), and run without errors on a ClickHouse Cloud (26.6) test service.
 - Not used: ClickHouse Agents memory (manually created memories did not reach the agent in testing), scheduled chats (creating a schedule for an agent with the ClickHouse tool kept asking to reconnect the MCP server), and the Agent API (not available). Ask the agent for the daily note and the weekly review.
 - What changed and how each change was tested: [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases). Known problems and planned work: [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues).
 
 ## Development
 
-Repository layout, how to build and test the zips, and the conventions every query follows: [docs/development.md](docs/development.md).
+Repository layout, how to build and test the zips, and the conventions every query follows: [Development](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/development.html).

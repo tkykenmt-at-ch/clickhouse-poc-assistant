@@ -1,5 +1,7 @@
 <div align="center">
 
+[English](README.md) | **日本語**
+
 # PoC Assistant
 
 **powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
@@ -11,7 +13,7 @@ ClickHouse Cloud の PoC（概念実証）を、推測でなく根拠で進め�
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-[始め方](#始め方) | [通しの手順](docs/walkthrough.ja.md) | [導入の手順](docs/setup.ja.md) | [ドキュメントのサイト](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/index.html) | [English](README.md)
+**[ドキュメント](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/index.html)**
 
 <img src="docs/images/ja/1-request.png" alt="自分の言葉で頼んだ一言と、選ばれたスキル" width="760">
 
@@ -70,7 +72,7 @@ flowchart LR
     A -. "Cloud の remote MCP" .-> C
 ```
 
-Cloud のツールは任意です。使う場合は、ClickHouse Cloud の remote MCP サーバーの足し方をエージェントに聞いてください（[docs/setup.ja.md](docs/setup.ja.md#任意で足す-mcp-サーバー)）。追加しない場合、費用、バックアップ、ClickPipes については、エージェントが Cloud コンソールを案内します。
+Cloud のツールは任意です。使う場合は、ClickHouse Cloud の remote MCP サーバーの足し方をエージェントに聞いてください（[導入の手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html#任意で足す-mcp-サーバー)）。追加しない場合、費用、バックアップ、ClickPipes については、エージェントが Cloud コンソールを案内します。
 
 ## 得られるもの
 
@@ -95,7 +97,7 @@ Cloud のツールは任意です。使う場合は、ClickHouse Cloud の remot
 </table>
 
 > [!TIP]
-> 合成データの PoC を 1 件、計画から共有レポートまで段ごとに追った例は、[通しの手順](docs/walkthrough.ja.md)にあります。
+> 合成データの PoC を 1 件、計画から共有レポートまで段ごとに追った例は、[通しの手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html)にあります。
 
 ## 回答の決まり
 
@@ -113,16 +115,16 @@ Cloud のツールは任意です。使う場合は、ClickHouse Cloud の remot
 2. エージェントの作成：[最新のリリース](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest)から `poc-assistant-skill.zip` を上げ、エージェントを作ります。
 3. 計画を頼む：できた計画ファイルをエージェントに添付します。
 
-詳しい手順：**[docs/setup.ja.md](docs/setup.ja.md)**
+詳しい手順は[導入の手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html)にあります。
 
 ## 確認の状況
 
 - v0.6.0 から、エージェントのスキルは 1 つ（`poc-assistant`）で、段ごとにファイルを分けています。ClickHouse Agents（2026-10-19）で、英語と日本語の依頼から正しい段が読まれることを確かめました。対象は計画（新しい `## 準備` の節を含む）、同梱の `clickhouse-architecture-advisor` の規則を使う設計、設計との照合、費用の試算、ヘルプ（できること、AWS と Google のドキュメントのサーバーの足し方、貼られたシークレットを使わず繰り返さないこと）です。そのほかの段は移したあと試し直していません。本文の変更は段の名前と、日次のまとめと全体のまとめに足した「`## 準備` の未完了に 1 行触れる」決まりだけです。
-- 計画、設計、構築、照合から共有レポートまでの流れを、合成データの検証用サービスで、ClickHouse Agents の英語と日本語の両方で通しました（2026-10-17）。構築は `clickhouse-client` で行い、わざと入れた 2 つの間違いを照合が見つけました。[通しの手順](docs/walkthrough.ja.md)を参照してください。
+- 計画、設計、構築、照合から共有レポートまでの流れを、合成データの検証用サービスで、ClickHouse Agents の英語と日本語の両方で通しました（2026-10-17）。構築は `clickhouse-client` で行い、わざと入れた 2 つの間違いを照合が見つけました。[通しの手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html)を参照してください。
 - ClickHouse 26.7 と 26.8 で、最小権限の DB ユーザーとして全クエリが通ります（`scripts/test-queries.sh`、CI で実行）。ClickHouse Cloud（26.6）の検証用サービスでも、全クエリがエラーなく動きます。
 - 使っていないもの：ClickHouse Agents のメモリ（手で作ったメモリが検証では会話に渡らなかった）、定期実行（ClickHouse のツールを付けたエージェントで予定を作ると、MCP の再接続を求められ続けた）、Agent API（使えない）。日次のまとめと週次の総点検はエージェントに頼んで実行します。
 - 変更点と各変更の確かめ方は [Releases](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases)、既知の問題と予定は [Issues](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/issues) にあります。
 
 ## 開発者向け
 
-リポジトリの構成、zip の作り方と試験、クエリの決まりは [docs/development.ja.md](docs/development.ja.md) にあります。
+リポジトリの構成、zip の作り方と試験、クエリの決まりは[開発者向け](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/development.html)のページにあります。
