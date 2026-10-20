@@ -71,8 +71,7 @@ Write `## Setup` from `stages/help.md` ("Adding an MCP server") and from what th
 - List the servers this PoC needs, as "Recommend only servers the PoC needs" in `stages/help.md` decides: the
   documentation server of the cloud where the data sources and applications run, and the ClickHouse Cloud server
   when a criterion is measured with `Cloud tools` or the user wants cost, backups or ClickPipes. Take the URL, the
-  authentication and the tool names from the table in `stages/help.md`, and nothing else; say that the Google
-  server has not been tested yet.
+  authentication and the tool names from the table in `stages/help.md`, and nothing else.
 - List under "Not added" the providers' servers that this PoC does not need, with the reason in a few words.
 - For the guide line, use the English page above, or for a plan in Japanese
   https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html#任意で足す-mcp-サーバー (the anchors differ
