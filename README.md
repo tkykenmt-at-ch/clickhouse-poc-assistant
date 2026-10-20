@@ -1,5 +1,7 @@
 <div align="center">
 
+**English** | [日本語](README.ja.md)
+
 # PoC Assistant
 
 **powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
@@ -11,7 +13,7 @@ The agent reads your service's system tables and the official documentation,<br>
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-[Documentation](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.html) | [Setup guide](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/setup.html) | [Walkthrough](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.html) | [日本語](README.ja.md)
+**[Documentation](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.html)**
 
 <img src="docs/images/en/1-request.png" alt="A request in plain words, and the skill the agent picked" width="760">
 

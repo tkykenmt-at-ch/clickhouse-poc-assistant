@@ -1,5 +1,7 @@
 <div align="center">
 
+[English](README.md) | **日本語**
+
 # PoC Assistant
 
 **powered by [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/features/ai-ml/agents)**
@@ -11,7 +13,7 @@ ClickHouse Cloud の PoC（概念実証）を、推測でなく根拠で進め�
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-[ドキュメント](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/index.html) | [導入の手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html) | [通しの手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html) | [English](README.md)
+**[ドキュメント](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/index.html)**
 
 <img src="docs/images/ja/1-request.png" alt="自分の言葉で頼んだ一言と、選ばれたスキル" width="760">
 
