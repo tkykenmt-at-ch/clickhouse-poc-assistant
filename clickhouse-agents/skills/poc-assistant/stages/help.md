@@ -114,8 +114,8 @@ Common steps (https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/b
 | Google Developer Knowledge MCP (https://developers.google.com/knowledge/mcp) | `https://developerknowledge.googleapis.com/mcp` | **API Key**, **Custom**, header `X-Goog-Api-Key`, with a key from the user's own Google Cloud project (below) | `search_documents`, `get_documents`, `answer_query` |
 
 - The ClickHouse Cloud server's query tools duplicate the built-in ones; do not add them.
-- AWS and Microsoft were added with **No auth** in testing (2026-10-16) and chats did not wait for a sign-in. Google
-  has not been tested yet in ClickHouse Agents; say so.
+- AWS and Microsoft were added with **No auth** in testing (2026-10-16), and Google with an API key (2026-10-20);
+  chats did not wait for a sign-in.
 - What is sent: the text of each search goes to the provider. The stages send only general questions (a provider's
   product such as Private Service Connect, a region, a feature), never the company name, table or column names,
   data values, account IDs or the names of the user's services.
