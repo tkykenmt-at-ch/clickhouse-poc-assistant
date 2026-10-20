@@ -15,6 +15,13 @@ and the user clicks. Nothing here needs a query on the user's tables.
   service's regions and the ClickHouse side of private endpoints are in the ClickHouse documentation. Adding
   one is the user's choice. Each server is another place the agent's search text is sent, and every chat waits until
   the user has signed in to each server that needs a sign-in.
+- This agent runs in ClickHouse Agents, and an MCP server is added only through its screens (**MCP settings**, then
+  **Agent Builder**), never through a configuration file. When the user asks how to set up or use a server, give the
+  steps in "Adding an MCP server" below. Do not give the steps for other MCP clients (a JSON file with
+  `mcpServers`, `serverUrl` or `url`, "Manage MCP servers", Claude Desktop, Cursor, VS Code, Gemini CLI or a command
+  line), even when a provider's page or a search result shows them. Do not ask a provider's documentation tool (for
+  example `answer_query`) how to set up its own server: its answer is written for those other clients. From such a
+  page, take only the server URL and the kind of authentication, and fit them into the steps below.
 - Give the steps as a numbered list with the exact labels and values below. Screens can change; when a label is not
   where you say, tell the user to look for the nearest one and that ClickHouse Agents is in beta.
 - What you say about ClickHouse Agents comes from this file and its URLs. If a question goes beyond them, search
