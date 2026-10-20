@@ -20,8 +20,9 @@ and the user clicks. Nothing here needs a query on the user's tables.
   steps in "Adding an MCP server" below. Do not give the steps for other MCP clients (a JSON file with
   `mcpServers`, `serverUrl` or `url`, "Manage MCP servers", Claude Desktop, Cursor, VS Code, Gemini CLI or a command
   line), even when a provider's page or a search result shows them. Do not ask a provider's documentation tool (for
-  example `answer_query`) how to set up its own server: its answer is written for those other clients. From such a
-  page, take only the server URL and the kind of authentication, and fit them into the steps below.
+  example `answer_query`) how to set up its own server: its answer is written for those other clients. This is a rule
+  for you; do not repeat it to the user. From such a page, take only the server URL and the kind of
+  authentication, and fit them into the steps below.
 - Give the steps as a numbered list with the exact labels and values below. Screens can change; when a label is not
   where you say, tell the user to look for the nearest one and that ClickHouse Agents is in beta.
 - What you say about ClickHouse Agents comes from this file and its URLs. If a question goes beyond them, search
@@ -39,7 +40,8 @@ and the user clicks. Nothing here needs a query on the user's tables.
 | **Agent Builder** / **Create new agent** / **Add tools** / **File context** / **Add** | **エージェントビルダー** / **新しいエージェントを作成** / **ツールを追加** / **ファイルのコンテキスト** / **追加** |
 | **Create** / **Save** / the "updated" notification | **作成** / **保存** / 「正常に更新されました」 |
 | **MCP settings** / **Add MCP** / **Connect** | **MCP設定** / **MCPの追加** / **接続** |
-| **Streamable HTTPS** / **No auth** / **OAuth** | **ストリーミング可能なHTTPS** / **認証なし** / **OAuth** |
+| **Streamable HTTPS** / **No auth** / **API Key** / **OAuth** | **ストリーミング可能なHTTPS** / **認証なし** / **APIキー** / **OAuth** |
+| **Custom** / **Custom Header Name** / **Each user provides their own key** | **カスタム** / **カスタムヘッダー名** / **ユーザーは個人キーを登録する** |
 | **I trust this application** / **Create MCP server** | **このアプリケーションを信頼している** / **MCPサーバーの作成** |
 | **Artifacts** / **Code Interpreter** | **アーティファクト** / **コードインタープリター** |
 
@@ -109,31 +111,29 @@ Common steps (https://clickhouse.com/docs/products/cloud/features/ai-ml/agents/b
 | ClickHouse Cloud remote MCP | `https://mcp.clickhouse.cloud/mcp` | OAuth (sign in with the Cloud user) | `get_organizations`, `get_services_list`, `get_service_details`, `get_organization_cost`, `list_service_backups`, `get_service_backup_configuration`, `list_clickpipes`, `get_clickpipe` |
 | AWS Knowledge MCP Server (https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server) | `https://knowledge-mcp.global.api.aws` | **No auth** (rate limited) | `aws___search_documentation`, `aws___read_documentation`, `aws___list_regions`, `aws___get_regional_availability` |
 | Microsoft Learn MCP Server (https://learn.microsoft.com/training/support/mcp) | `https://learn.microsoft.com/api/mcp` | **No auth** (subject to the Microsoft Learn terms) | `microsoft_docs_search`, `microsoft_docs_fetch`, `microsoft_code_sample_search` |
-| Google Developer Knowledge MCP (https://developers.google.com/knowledge/mcp) | `https://developerknowledge.googleapis.com/mcp` | **OAuth** with a client from the user's own Google Cloud project (below) | `search_documents`, `get_documents`, `answer_query` |
+| Google Developer Knowledge MCP (https://developers.google.com/knowledge/mcp) | `https://developerknowledge.googleapis.com/mcp` | **API Key**, **Custom**, header `X-Goog-Api-Key`, with a key from the user's own Google Cloud project (below) | `search_documents`, `get_documents`, `answer_query` |
 
 - The ClickHouse Cloud server's query tools duplicate the built-in ones; do not add them.
 - AWS and Microsoft were added with **No auth** in testing (2026-10-16) and chats did not wait for a sign-in. Google
   has not been tested yet in ClickHouse Agents; say so.
-- What is sent: the text of each search goes to the provider. The stages send only general questions (a provider
-  service, a region, a feature), never the company name, table or column names, data values, account IDs or
-  service names.
+- What is sent: the text of each search goes to the provider. The stages send only general questions (a provider's
+  product such as Private Service Connect, a region, a feature), never the company name, table or column names,
+  data values, account IDs or the names of the user's services.
 
-Google needs an OAuth client first, because Google's remote MCP servers do not support dynamic client
-registration (https://developers.google.com/knowledge/mcp). In the user's Google Cloud project:
+Google needs an API key first (https://developers.google.com/knowledge/mcp). In the user's Google Cloud project:
 
 1. Enable the Developer Knowledge API (`developerknowledge.googleapis.com`).
-2. Set up the consent screen: **Branding**, **Audience** (add the user as a test user while it is in testing).
-3. Create an OAuth client of type **Web application** with the redirect URI
-   `https://ai.clickhouse.cloud/api/mcp/<server name>/oauth/callback`, where `<server name>` is the name given in
-   **MCP settings**. This is the callback path in the LibreChat documentation
-   (https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/mcp_servers); it has not been
-   confirmed in ClickHouse Agents yet. If Google reports a redirect URI mismatch, the URI it shows is the one to
-   register.
-4. In **MCP settings**, choose **OAuth** and enter the client ID and the secret there, with the scope
-   `https://www.googleapis.com/auth/devprofiles.full_control`. No project header is needed: requests are attributed
-   to the project that owns the client.
+2. Create an API key (**Credentials** → **Create credentials** → **API key**), and restrict it: **API restrictions**
+   → **Restrict key** → only **Developer Knowledge API**. Then the key can do nothing but search the public
+   documentation, and its use counts against that project.
+3. In **MCP settings**, choose **API Key**, then **Custom**, and enter `X-Goog-Api-Key` as the **Custom Header
+   Name**. Either enter the key there, or tick **Each user provides their own key** so that each user of the agent
+   enters their own; tick it when other people use the agent.
 
-Do not suggest an API key for Google: a fixed key would sit in the Agents settings.
+The key does not expire until it is deleted, so tell the user to delete it in the Google Cloud console when the PoC
+ends or if it may have leaked, and to create a new one. Google also offers OAuth, which needs a consent screen, an
+OAuth client and a redirect URI, and makes every chat wait for a sign-in; suggest it only if the user's organization
+does not allow API keys, and then point to Google's page.
 
 ### Fixing a connection
 
@@ -142,7 +142,7 @@ Do not suggest an API key for Google: a fixed key would sit in the Agents settin
 | The agent asks to connect to ClickHouse, or the ClickHouse tools fail to authorize | **MCP settings** → **ClickHouse** → **Connect**. The agent sees only the organizations and services the Cloud user can access. |
 | A query fails with "Generative AI features are not enabled for service …" | In the Cloud console, open the service → **Settings** → turn on **Enable Generative AI features**. An organization admin accepts the terms for AI features for the organization. |
 | The service is not found, or its queries fail although the user can see it | In the Cloud console, open the service → **Connect** → **MCP** under **Connect with** → turn on **Enable Model Context Protocol** (https://clickhouse.com/docs/products/cloud/features/ai-ml/remote-mcp). |
-| Every chat waits for a sign-in | One of the agent's tools belongs to a server that needs a sign-in (for example ClickStack or Google). Sign in under **MCP settings**, or remove that server's tools from the agent and **Save**. |
+| Every chat waits for a sign-in | One of the agent's tools belongs to a server that needs a sign-in (for example ClickStack or the ClickHouse Cloud remote MCP). Sign in under **MCP settings**, or remove that server's tools from the agent and **Save**. |
 | The plan or the design is not found | Attach it as described below; then start a new chat. |
 | The answer does not start by loading this skill | The chat is with the built-in ClickHouse Agent, whose skills are off. Start the chat with this agent. |
 
