@@ -120,6 +120,7 @@ Cloud のツールは任意です。使う場合は、ClickHouse Cloud の remot
 ## 確認の状況
 
 - v0.6.0 から、エージェントのスキルは 1 つ（`poc-assistant`）で、段ごとにファイルを分けています。ClickHouse Agents（2026-10-19）で、英語と日本語の依頼から正しい段が読まれることを確かめました。対象は計画（新しい `## 準備` の節を含む）、同梱の `clickhouse-architecture-advisor` の規則を使う設計、設計との照合、費用の試算、ヘルプ（できること、AWS と Google のドキュメントのサーバーの足し方、貼られたシークレットを使わず繰り返さないこと）です。そのほかの段は移したあと試し直していません。本文の変更は段の名前と、日次のまとめと全体のまとめに足した「`## 準備` の未完了に 1 行触れる」決まりだけです。
+- ClickHouse Agents に足してエージェントが使えた MCP サーバーは、ClickHouse Cloud のリモート MCP（OAuth、2026-10-13）、AWS Knowledge と Microsoft Learn（認証なし、2026-10-16）、Google Developer Knowledge（API キー、2026-10-20）です。足し方を聞くと、エージェントは設定ファイルではなく ClickHouse Agents の画面での手順を示します（v0.6.1）。
 - 計画、設計、構築、照合から共有レポートまでの流れを、合成データの検証用サービスで、ClickHouse Agents の英語と日本語の両方で通しました（2026-10-17）。構築は `clickhouse-client` で行い、わざと入れた 2 つの間違いを照合が見つけました。[通しの手順](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html)を参照してください。
 - ClickHouse 26.7 と 26.8 で、最小権限の DB ユーザーとして全クエリが通ります（`scripts/test-queries.sh`、CI で実行）。ClickHouse Cloud（26.6）の検証用サービスでも、全クエリがエラーなく動きます。
 - 使っていないもの：ClickHouse Agents のメモリ（手で作ったメモリが検証では会話に渡らなかった）、定期実行（ClickHouse のツールを付けたエージェントで予定を作ると、MCP の再接続を求められ続けた）、Agent API（使えない）。日次のまとめと週次の総点検はエージェントに頼んで実行します。

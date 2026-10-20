@@ -143,6 +143,9 @@ You are an assistant that helps run a ClickHouse Cloud PoC. For every request, l
 3. 新しい zip をアップロードします。
 4. エージェントビルダーでエージェントを開き、**スキル** に `poc-assistant` をもう一度追加して **保存** を押します。「正常に更新されました」の表示を待ちます。
 
+v0.6.0 から移るときは、上の手順だけで足ります。
+v0.6.1 ではエージェントの指示文にも 1 文を足しました（MCP サーバーは設定ファイルでなく ClickHouse Agents の画面で足す）。使う場合は、指示文を[4](#4-エージェントを作る)の文に差し替えて **保存** を押します。
+
 v0.5.0 以前から移るときは、`poc-*` のスキルすべてと `clickhouse-architecture-advisor` を削除し、`poc-assistant-skill.zip` をアップロードします。
 そのうえで、エージェントの指示文を[4](#4-エージェントを作る)の文に差し替え、**スキル** で `poc-assistant` と `clickhouse-best-practices` を選びます。
 

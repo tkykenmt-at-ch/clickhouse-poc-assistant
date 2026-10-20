@@ -118,6 +118,8 @@ Skills cannot be replaced in place, and deleting a skill removes it from the age
 3. Upload the new zip.
 4. In Agent Builder, open the agent, add `poc-assistant` again under **Skills**, and click **Save**. Wait for the "updated" notification.
 
+Upgrading from v0.6.0: the steps above are enough. v0.6.1 also adds one sentence to the agent's instructions (MCP servers are added in the ClickHouse Agents screens, not a configuration file); to use it, replace the instructions with the text in [step 4](#4-create-the-agent) and click **Save**.
+
 Upgrading from v0.5.0 or earlier: delete every `poc-*` skill and `clickhouse-architecture-advisor`, upload `poc-assistant-skill.zip`, replace the agent's instructions with the text in [step 4](#4-create-the-agent), and select `poc-assistant` and `clickhouse-best-practices` under **Skills**.
 
 ## Limitations (as of 2026-10-08)
