@@ -1,6 +1,6 @@
 # Pricing snapshot
 
-Copied on 2026-10-13 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
+Copied on 2026-11-09 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
 
 
 
@@ -164,7 +164,7 @@ _Egress is billed per GB and varies by region. Ingress is not charged. Inter-reg
 
 - Streaming sources (e.g. Kafka): billed for compute at $0.20 / hr per compute unit **plus** $0.04 / GB ingested per month.
 - Object-storage connectors: billed for compute only, with no per-GB ingestion fee.
-- Postgres CDC is priced separately — https://clickhouse.com/docs/cloud/reference/billing/clickpipes/postgres-cdc
+- CDC connectors (Postgres, MySQL, MongoDB) are priced separately — https://clickhouse.com/docs/products/cloud/reference/billing/clickpipes/clickpipes-for-cdc
 
 ## Billing & purchasing
 
