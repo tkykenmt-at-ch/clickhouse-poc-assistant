@@ -1,6 +1,6 @@
 # Pricing snapshot
 
-Copied on 2026-11-09 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
+Copied on 2026-11-10 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
 
 
 
@@ -91,39 +91,83 @@ total ≈ compute + storage + backups + ClickPipes + data-transfer egress
 
 _Compute is USD per compute-unit-hour; storage is USD per TB per month. Public regions with published rates are listed below._
 
+### GCP
+| Region | Plan | Compute ($/unit/hr) | Storage ($/TB/mo) |
+|---|---|---|---|
+| asia-northeast1 | basic | $0.23497 | $25.30 |
+| asia-northeast1 | scale | $0.32153 | $25.30 |
+| asia-northeast1 | enterprise | $0.42046 | $25.30 |
+| asia-southeast1 | basic | $0.22297 | $22.00 |
+| asia-southeast1 | scale | $0.30512 | $22.00 |
+| asia-southeast1 | enterprise | $0.39900 | $22.00 |
+| europe-west2 | basic | $0.23387 | $25.30 |
+| europe-west2 | scale | $0.32003 | $25.30 |
+| europe-west2 | enterprise | $0.41850 | $25.30 |
+| europe-west4 | basic | $0.20133 | $22.00 |
+| europe-west4 | scale | $0.27550 | $22.00 |
+| europe-west4 | enterprise | $0.36027 | $22.00 |
+| us-central1 | basic | $0.18289 | $22.00 |
+| us-central1 | scale | $0.25027 | $22.00 |
+| us-central1 | enterprise | $0.32727 | $22.00 |
+| us-east1 | basic | $0.18289 | $22.00 |
+| us-east1 | scale | $0.25027 | $22.00 |
+| us-east1 | enterprise | $0.32727 | $22.00 |
+
 ### AWS
 | Region | Plan | Compute ($/unit/hr) | Storage ($/TB/mo) |
 |---|---|---|---|
+| ap-northeast-1 | basic | $0.28180 | $27.50 |
+| ap-northeast-1 | scale | $0.38563 | $27.50 |
 | ap-northeast-1 | enterprise | $0.50428 | $27.50 |
+| ap-northeast-2 | basic | $0.26829 | $27.50 |
+| ap-northeast-2 | scale | $0.36714 | $27.50 |
 | ap-northeast-2 | enterprise | $0.48010 | $27.50 |
+| ap-south-1 | basic | $0.23548 | $27.50 |
+| ap-south-1 | scale | $0.32223 | $27.50 |
 | ap-south-1 | enterprise | $0.42138 | $27.50 |
+| ap-southeast-1 | basic | $0.27215 | $27.50 |
+| ap-southeast-1 | scale | $0.37242 | $27.50 |
 | ap-southeast-1 | enterprise | $0.48701 | $27.50 |
+| ap-southeast-2 | basic | $0.27408 | $27.50 |
+| ap-southeast-2 | scale | $0.37506 | $27.50 |
 | ap-southeast-2 | enterprise | $0.49046 | $27.50 |
+| ca-central-1 | basic | $0.24320 | $27.50 |
+| ca-central-1 | scale | $0.33280 | $27.50 |
 | ca-central-1 | enterprise | $0.43520 | $27.50 |
+| eu-central-1 | basic | $0.26250 | $26.95 |
+| eu-central-1 | scale | $0.35921 | $26.95 |
 | eu-central-1 | enterprise | $0.46974 | $26.95 |
+| eu-west-1 | basic | $0.24320 | $25.30 |
+| eu-west-1 | scale | $0.33280 | $25.30 |
 | eu-west-1 | enterprise | $0.43520 | $25.30 |
+| eu-west-2 | basic | $0.25285 | $26.40 |
+| eu-west-2 | scale | $0.34601 | $26.40 |
 | eu-west-2 | enterprise | $0.45247 | $26.40 |
+| il-central-1 | basic | $0.25538 | $27.50 |
+| il-central-1 | scale | $0.34947 | $27.50 |
 | il-central-1 | enterprise | $0.45700 | $27.50 |
+| us-east-1 | basic | $0.21811 | $25.30 |
+| us-east-1 | scale | $0.29846 | $25.30 |
 | us-east-1 | enterprise | $0.39030 | $25.30 |
+| us-east-2 | basic | $0.21811 | $25.30 |
+| us-east-2 | scale | $0.29846 | $25.30 |
 | us-east-2 | enterprise | $0.39030 | $25.30 |
+| us-west-2 | basic | $0.21811 | $25.30 |
+| us-west-2 | scale | $0.29846 | $25.30 |
 | us-west-2 | enterprise | $0.39030 | $25.30 |
 
 ### Azure
 | Region | Plan | Compute ($/unit/hr) | Storage ($/TB/mo) |
 |---|---|---|---|
+| eastus2 | basic | $0.24107 | $25.30 |
+| eastus2 | scale | $0.32988 | $25.30 |
 | eastus2 | enterprise | $0.43138 | $25.30 |
+| germanywestcentral | basic | $0.29013 | $24.75 |
+| germanywestcentral | scale | $0.39702 | $24.75 |
 | germanywestcentral | enterprise | $0.51919 | $24.75 |
+| westus3 | basic | $0.24107 | $25.30 |
+| westus3 | scale | $0.32988 | $25.30 |
 | westus3 | enterprise | $0.43138 | $25.30 |
-
-### GCP
-| Region | Plan | Compute ($/unit/hr) | Storage ($/TB/mo) |
-|---|---|---|---|
-| asia-northeast1 | enterprise | $0.42046 | $25.30 |
-| asia-southeast1 | enterprise | $0.39900 | $22.00 |
-| europe-west2 | enterprise | $0.41850 | $25.30 |
-| europe-west4 | enterprise | $0.36027 | $22.00 |
-| us-central1 | enterprise | $0.32727 | $22.00 |
-| us-east1 | enterprise | $0.32727 | $22.00 |
 
 ## Backups
 
@@ -146,16 +190,16 @@ _Egress is billed per GB and varies by region. Ingress is not charged. Inter-reg
 | AWS | eu-west-2 | $0.115 | $0.031 |
 | AWS | ap-northeast-1 | $0.144 | $0.115 |
 | AWS | ap-south-1 | $0.138 | $0.110 |
-| AWS | ap-northeast-2 | $0.144 | $0.125 |
+| AWS | ap-northeast-2 | $0.158 | $0.103 |
 | AWS | ap-southeast-1 | $0.151 | $0.115 |
 | AWS | ap-southeast-2 | $0.144 | $0.125 |
-| AWS | il-central-1 | $0.115 | $0.031 |
+| AWS | il-central-1 | $0.187 | $0.103 |
 | GCP | us-central1 | $0.114 | $0.036 |
 | GCP | us-east1 | $0.114 | $0.036 |
 | GCP | europe-west2 | $0.114 | $0.036 |
 | GCP | europe-west4 | $0.114 | $0.036 |
-| GCP | asia-southeast1 | $0.144 | $0.162 |
-| GCP | asia-northeast1 | $0.114 | $0.162 |
+| GCP | asia-southeast1 | $0.144 | $0.036 |
+| GCP | asia-northeast1 | $0.144 | $0.036 |
 | Azure | westus3 | $0.102 | $0.030 |
 | Azure | eastus2 | $0.102 | $0.030 |
 | Azure | germanywestcentral | $0.102 | $0.030 |
@@ -225,6 +269,6 @@ Use the interactive calculator at https://clickhouse.com/pricing — it applies 
 - Every rate here is in USD and is region-specific. Do not quote a price without stating the plan, cloud provider and region it came from.
 - The formulas above reproduce the on-page calculator for compute and storage. Backups, ClickPipes and egress are add-ons at published rates and can differ from a final invoice.
 - Treat any figure you compute as an estimate. For a quotable number, send the user to https://clickhouse.com/pricing, or to sales for volumes above 200TB of ingest or custom commitments.
-- ClickHouse, ClickStack and ClickHouse Cloud for Postgres are priced by different models — check which product the question is about before applying a formula.
+- ClickHouse, self-managed ClickStack and ClickHouse Cloud for Postgres are priced by different models — check which product the question is about before applying a formula. Fully managed ClickHouse Observability is priced per GB ingested (https://clickhouse.com/pricing/observability.md).
 - Plan feature lists are shown exactly as the pricing page shows them and build on each other. To decide whether a plan includes a feature, read its list and then the list of every plan it says "Everything in …, plus:" about; a later plan's entry on the same topic (e.g. "Unlimited storage") replaces the earlier one ("Up to 1 TB storage").
 - Rates in this document are refreshed on each deployment.
