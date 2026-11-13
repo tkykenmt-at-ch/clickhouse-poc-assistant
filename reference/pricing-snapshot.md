@@ -1,6 +1,6 @@
 # Pricing snapshot
 
-Copied on 2026-11-10 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
+Copied on 2026-11-13 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
 
 
 
@@ -210,6 +210,48 @@ _Egress is billed per GB and varies by region. Ingress is not charged. Inter-reg
 - Object-storage connectors: billed for compute only, with no per-GB ingestion fee.
 - CDC connectors (Postgres, MySQL, MongoDB) are priced separately — https://clickhouse.com/docs/products/cloud/reference/billing/clickpipes/clickpipes-for-cdc
 
+## Self-managed ClickHouse Observability
+
+Fully managed ClickHouse Observability is priced per GB ingested instead: see https://clickhouse.com/pricing/observability.md. This section prices self-managed ClickHouse Observability (formerly Managed ClickStack): the same observability stack on your own ClickHouse Cloud service.
+
+Self-managed ClickHouse Observability uses the same compute and storage rates as above, but the configuration is derived from your **raw monthly ingest volume** instead of a chosen instance size.
+
+```
+ingest_MB_per_s = ingest_GB_per_month × 1000 ÷ (30.5 × 24 × 3600)
+raw_vCPU        = ingest_MB_per_s ÷ 10   (fractional — not yet rounded)
+
+storage / month = ingest_GB_per_month × retention_months ÷ 10 ÷ 1000 × storageUnitPrice
+total / month   = compute pools + storage
+```
+
+How `raw_vCPU` becomes compute depends on the volume — the rounding differs per tier, so use the row that matches. RAM is vCPU × 4 GiB, snapped up to a selectable compute size, and every pool has a floor of 2 replicas.
+
+| Raw monthly ingest | Sizing |
+|---|---|
+| Under 10 TB | Fixed pool of 2 × 8 GiB, regardless of `raw_vCPU` |
+| 10 TB up to (not including) 100 TB | One combined pool of `ceil(raw_vCPU × 4)` vCPU — ingest and query summed **before** rounding |
+| 100 TB and above | Two pools: ingest `ceil(raw_vCPU)` vCPU, query `ceil(raw_vCPU) × 3` vCPU — ingest rounded **first**, query derived from it |
+
+The ×3 on query compute is an assumed 3 queries/sec.
+
+Above 200TB of raw monthly ingest, pricing moves to a custom quote — contact sales.
+
+### Worked examples
+
+The calculator's defaults: Scale plan, AWS us-east-1 ($0.29846 per compute-unit-hour, $25.30 per TB-month), 24 active hours a day, 1 month retention, 2 replicas minimum. Compute per pool = (GiB ÷ 8) × 732 hours × rate × replicas. Other plans and regions scale with their rates in the table above.
+
+| Raw ingest / month | Tier | Ingest pool | Query pool | Compute / month | Storage / month | Total / month |
+|---|---|---|---|---|---|---|
+| 5 TB | fixed | 2 × 8 GiB | shared with ingest | $436.95 | $12.65 | $449.60 |
+| 35 TB | combined | 2 × 12 GiB | shared with ingest | $655.42 | $88.55 | $743.97 |
+| 200 TB | split | 2 × 16 GiB | 2 × 48 GiB | $3495.56 | $506.00 | $4001.56 |
+
+- 5 TB = 1.90 MB/s = 0.19 raw vCPU; under 10 TB, so the fixed pool of 2 × 8 GiB applies.
+- 35 TB = 13.28 MB/s = 1.33 raw vCPU; ceil(1.33 × 4) = 6 vCPU = 24 GiB → 2 × 12 GiB, one pool for ingest and queries.
+- 200 TB = 75.90 MB/s = 7.59 raw vCPU; ingest ceil(7.59) = 8 vCPU = 32 GiB → 2 × 16 GiB; query 8 × 3 = 24 vCPU = 96 GiB → 2 × 48 GiB.
+
+Node size is the smallest selectable size that meets a pool's RAM at the 2-replica minimum; the replica count grows only once a pool needs more than 472 GiB.
+
 ## Billing & purchasing
 
 | Method | Details |
@@ -269,6 +311,6 @@ Use the interactive calculator at https://clickhouse.com/pricing — it applies 
 - Every rate here is in USD and is region-specific. Do not quote a price without stating the plan, cloud provider and region it came from.
 - The formulas above reproduce the on-page calculator for compute and storage. Backups, ClickPipes and egress are add-ons at published rates and can differ from a final invoice.
 - Treat any figure you compute as an estimate. For a quotable number, send the user to https://clickhouse.com/pricing, or to sales for volumes above 200TB of ingest or custom commitments.
-- ClickHouse, self-managed ClickStack and ClickHouse Cloud for Postgres are priced by different models — check which product the question is about before applying a formula. Fully managed ClickHouse Observability is priced per GB ingested (https://clickhouse.com/pricing/observability.md).
+- ClickHouse, self-managed ClickHouse Observability and ClickHouse Cloud for Postgres are priced by different models — check which product the question is about before applying a formula. Fully managed ClickHouse Observability is priced per GB ingested (https://clickhouse.com/pricing/observability.md).
 - Plan feature lists are shown exactly as the pricing page shows them and build on each other. To decide whether a plan includes a feature, read its list and then the list of every plan it says "Everything in …, plus:" about; a later plan's entry on the same topic (e.g. "Unlimited storage") replaces the earlier one ("Up to 1 TB storage").
 - Rates in this document are refreshed on each deployment.
