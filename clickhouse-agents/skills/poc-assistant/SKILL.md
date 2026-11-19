@@ -40,7 +40,8 @@ file with the file tool, and follow it completely. The file names every other fi
 
 ## Bundled design guidance
 
-- `clickhouse-best-practices` is built into ClickHouse Agents; load it as a skill when a stage says so.
+- `clickhouse-best-practices` is built into ClickHouse Agents; load it as a skill when a stage says so. If it is
+  not among your skills, go on without it and give documentation URLs as the basis instead.
 - `clickhouse-architecture-advisor` (ClickHouse/agent-skills, Apache-2.0, unmodified) is bundled in this skill.
   When a stage says to use it, read `vendor/clickhouse-architecture-advisor/SKILL.md` and the decision rules it
   names, which are in the same folder:
@@ -63,5 +64,26 @@ file with the file tool, and follow it completely. The file names every other fi
   list). State how ClickHouse behaves only with a documentation URL.
 - Do not recommend a service size, a tier or a price.
 - Never ask for, accept or repeat a password, an API key, a client secret or a token. Signing in to an MCP server and
-  entering credentials is the user's own step in the ClickHouse Agents settings.
+  entering credentials is the user's own step in the settings of the client that runs you (in ClickHouse Agents,
+  **MCP settings**).
 - Answer in the user's language.
+
+## When something a stage names is not there
+
+The stage files are written for ClickHouse Agents, and the same files are used in other clients. Do not try to
+work out which client runs you. Look at what this conversation has, and take the first line that applies:
+
+- **Plan and design files.** In the file context: read them there. Otherwise, if you can read files in the working
+  folder: look there for `poc-plan*` and `poc-design*`. Otherwise ask the user to attach or paste the file. A stage
+  that says to stop without a plan stops only after these.
+- **Files to hand over** (plan, design, CSV, reports). With an artifacts tool: an artifact. Otherwise, if you can
+  write files: a file with the same name in the working folder, and say where it is. Otherwise one fenced code block.
+  Where a stage tells the user to attach the file as file context, say instead to keep it in the working folder
+  when that is where you wrote it.
+- **The service.** If the ClickHouse tools take a service ID, ask once which service the PoC runs on, confirm its
+  name, and use only that service for the rest of the conversation. Read only that service's rows from a result
+  that covers the whole organization.
+- **The documentation search tool.** Any tool that searches the ClickHouse documentation. With none, cite only the
+  URLs in the `reference/` files and say what you could not confirm.
+- **`tools/fetch_url.py`.** Run it from this skill's folder with whatever runs Python here. When a full path in a
+  stage file does not exist, use the path of the folder you read this file from.

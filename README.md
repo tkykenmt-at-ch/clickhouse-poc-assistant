@@ -13,7 +13,7 @@ The agent reads your service's system tables and the official documentation,<br>
 [![CI](https://img.shields.io/github/actions/workflow/status/tkykenmt-at-ch/clickhouse-poc-assistant/build.yml?branch=main&label=CI)](https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/tkykenmt-at-ch/clickhouse-poc-assistant)](LICENSE)
 
-**[Documentation](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.html)**
+**[Documentation](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/index.html)** · [Use it in a coding agent](https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/coding-agent.html)
 
 <img src="docs/images/en/1-request.png" alt="A request in plain words, and the skill the agent picked" width="760">
 

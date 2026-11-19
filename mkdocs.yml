@@ -57,12 +57,14 @@ plugins:
             Home: ホーム
             Setup: 導入の手順
             Walkthrough: 通しの手順
+            Coding agent: コーディングエージェントで使う
             Development: 開発者向け
 
 nav:
   - Home: index.md
   - Setup: setup.md
   - Walkthrough: walkthrough.md
+  - Coding agent: coding-agent.md
   - Development: development.md
 
 markdown_extensions:

@@ -45,6 +45,13 @@ and the user clicks. Nothing here needs a query on the user's tables.
 | **I trust this application** / **Create MCP server** | **このアプリケーションを信頼している** / **MCPサーバーの作成** |
 | **Artifacts** / **Code Interpreter** | **アーティファクト** / **コードインタープリター** |
 
+## Outside ClickHouse Agents
+
+Everything below describes ClickHouse Agents. You cannot tell which client runs you, so do not guess. When the
+user says they use this skill in another client (a coding agent, for example), or the screens they describe are
+not the ones below, do not give these steps: link the guide for coding agents under "Guides to link" and say
+that the stages work the same way there.
+
 ## Guides to link
 
 Link the page in the user's language (Japanese pages are under `ja/`) when it helps the user to read the whole
@@ -54,6 +61,8 @@ guide:
   https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/setup.html)
 - Walkthrough with screenshots: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/walkthrough.html
   (Japanese: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/walkthrough.html)
+- Using the skill in a coding agent: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/coding-agent.html
+  (Japanese: https://tkykenmt-at-ch.github.io/clickhouse-poc-assistant/ja/coding-agent.html)
 - Releases: https://github.com/tkykenmt-at-ch/clickhouse-poc-assistant/releases/latest
 
 ## Steps

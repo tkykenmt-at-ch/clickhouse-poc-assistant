@@ -8,6 +8,7 @@ An agent for [ClickHouse Agents](https://clickhouse.com/docs/products/cloud/feat
 |---|---|
 | [Setup](setup.md) | Install the skill, create the agent, and the optional MCP servers |
 | [Walkthrough](walkthrough.md) | One PoC on synthetic data, from the plan to the share report, with screenshots |
+| [Coding agent](coding-agent.md) | Run the same skill in a coding agent on your own machine, without ClickHouse Agents |
 | [Development](development.md) | Repository layout, build and test, query conventions |
 
 Once the agent exists, it explains its own setup: ask it "What can you do?" or "How do I add an MCP server?".
