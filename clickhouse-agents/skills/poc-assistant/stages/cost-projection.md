@@ -23,7 +23,7 @@ You project what a production service would cost per month at list price, from w
    - `queries/04_ingest_daily.sql`
    - `queries/08_resources_hourly.sql`
 3. If a `get_services_list` tool is available, read this service's entry (memory range, replicas, idling). If the Cloud tools are available, read the last 7 full days of this service's cost, one or two days per call, as `reference/cost-projection.md` says. Without them, say method A needs the daily cost from the console's usage breakdown and ask the user whether to paste it.
-4. Read the price list as "Reading the price list" in `reference/cost-projection.md` says. With the code tool, the skill's files are under `/mnt/data/skills/poc-assistant/`, so run `python3 /mnt/data/skills/poc-assistant/tools/fetch_url.py https://clickhouse.com/pricing.md --section ...`. Then pick the rates by the rules in "Where the rates come from".
+4. Read the price list as "Reading the price list" in `reference/cost-projection.md` says. Run `tools/fetch_url.py` from this skill's folder: `python3 <skill folder>/tools/fetch_url.py https://clickhouse.com/pricing.md --section ...`. With the code tool in ClickHouse Agents, the skill folder is `/mnt/data/skills/poc-assistant/`; anywhere else, it is the folder you read `SKILL.md` from. Then pick the rates by the rules in "Where the rates come from".
 5. Write the projection below.
 
 ## Projection format
