@@ -1,6 +1,6 @@
 # Pricing snapshot
 
-Copied on 2026-11-13 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
+Copied on 2026-11-26 from https://clickhouse.com/pricing.md by `scripts/fetch-pricing.sh`. Rates change; state this date with every figure taken from here and point to https://clickhouse.com/pricing for a current one.
 
 
 
@@ -30,42 +30,39 @@ Great for testing out new ideas or starter projects. Limited storage and memory.
 Includes:
 - ✓ Up to 1 TB storage
 - ✓ 8-12 GiB total memory
-- ✓ Backups every 24h, retained for 1 day
-- ✓ 1 availability zone
+- ✓ 1 replica
+- ✓ Daily backups, retained 1 day
 - ✓ Export backups to your own cloud account
-- ✓ Expert support with 1 business day response time
-- ✓ Single sign-on authentication (SSO) using Google or Microsoft Social login
+- ✓ Google or Microsoft social login
 - ✓ Multi-factor authentication (MFA)
+- ✓ SOC 2 Type II, ISO 27001, GDPR
+- ✓ Support: 1 business day, severity 3, business hours
 
 ### Scale
 For working with production environments, data at scale, or professional use cases.
 
 Everything in **Basic**, plus:
 - ✓ Unlimited storage
-- ✓ Configurable memory
-- ✓ Compute-compute separation
-- ✓ Backups every 24h, retained for 1 day
-- ✓ Configurable backups
-- ✓ 2+ availability zones
-- ✓ Expert support with 1 hour response time 24x7 for Severity 1 issues
-- ✓ S3 role-based access
-- ✓ Private networking
-- ✓ Automatic vertical scaling
-- ✓ Manual horizontal scaling
+- ✓ 1+ replicas
+- ✓ Compute-compute separation (warehouses)
+- ✓ Configurable backup schedule and retention
+- ✓ Vertical and horizontal autoscaling
+- ✓ Private connectivity (AWS PrivateLink, GCP Private Service Connect, Azure Private Link)
+- ✓ Release channels: Fast and Regular
+- ✓ Support: 1 hour, severity 1, 24x7
 
 ### Enterprise
 For working with production environments, very large data at scale, or enterprise use cases.
 
 Everything in **Scale**, plus:
-- ✓ SAML Single sign-on authentication (SSO)
-- ✓ Private regions
-- ✓ Manual vertical scaling for custom profiles
-- ✓ Enterprise support with 30 min response time for Severity 1 issues
-- ✓ Named Lead Support Engineer
-- ✓ Transparent data encryption / CMEK
-- ✓ Scheduled upgrades
-- ✓ Consultative migrations guides
-- ✓ HIPAA and PCI compliance
+- ✓ SAML Single sign-on authentication (SSO), SCIM, JWT with custom IdP
+- ✓ Custom profiles
+- ✓ Release channels: Slow, scheduled upgrade windows
+- ✓ Customer-managed encryption keys (CMEK)
+- ✓ HIPAA and PCI DSS compliance
+- ✓ Named lead support engineer
+- ✓ Consultative migration guides
+- ✓ Support: 30 minutes, severity 1, 24x7
 
 ## How pricing is calculated
 
